@@ -1,0 +1,1182 @@
+/* ==========================================================================
+   1. ƏSAS TÜND ARAYÜZ STİLLƏRİ
+   ========================================================================= */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+    background-color: #0b132b;
+    color: #f1f5f9;
+    padding: 15px;
+    font-size: 14px;
+}
+
+.app-container {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.control-panel {
+    background: #1c2541;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid #3a506b;
+}
+
+.control-panel input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #3a506b;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #0b132b;
+    color: #ffffff;
+    outline: none;
+    font-weight: 600;
+}
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+/* Normal halı: İçi dolu və sadə */
+.btn-blue {
+    background: #00bac0;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #00bac0;          /* Firuzəyi çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
+}
+
+
+/* Üstünə gələndə (hover) içi dolacaq */
+.btn-blue:hover {
+    filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
+    box-shadow: 0 0 10px rgba(0, 115, 192, 0.4); /* Zərif mavi parıltı effekti */
+}
+
+/* Normal halı: İçi dolu, parıltısız və sadə */
+.btnNewInvoice, #btn-new-invoice {
+   background: #00c076;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #00c076;          /* Firuzəyi çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
+
+}
+
+/* Üstünə gələndə (hover) içi dolacaq */
+.btnNewInvoice:hover, #btn-new-invoice:hover {
+   filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
+    box-shadow: 0 0 10px rgba(0, 115, 192, 0.4); /* Zərif mavi parıltı effekti */
+}
+
+/* Normal halı: İçi dolu və sadə */
+.btn-yellow {
+    background: #ff6a00;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #ff6a00;          /* Narıncı çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
+}
+
+
+/* Üstünə gələndə (hover) içi dolacaq */
+.btn-yellow:hover {
+     filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
+    box-shadow: 0 0 50px rgba(255, 106, 0, 0.4); /* Zərif narıncı parıltı effekti */
+}
+
+/* Normal halı: İçi dolu və sadə */
+.btn-green {
+    background: #10b981;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #10b981;          /* Yaşıl çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
+}
+
+
+/* Üstünə gələndə (hover) içi dolacaq */
+.btn-green:hover {
+    background: #0b865d;              /* Fon tamamilə firuzəyi olur */
+    border: 2px solid #0b865d;
+    color: #ffff;                     /* Yazı tünd rəngə keçir ki, oxunsun */
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.4); /* Zərif parıltı */
+}
+
+/* Cədvəl sahəsi */
+.main-content { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 992px) {
+    .main-content { grid-template-columns: 3fr 1fr; }
+    .control-panel { flex-direction: row; align-items: center; }
+}
+
+.invoice-box { background: #1c2541; padding: 16px; border-radius: 12px; border: 1px solid #3a506b; }
+
+.invoice-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    border: 1px solid #3a506b;
+    border-radius: 8px;
+    background: #0b132b;
+}
+
+.invoice-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.invoice-table th { 
+    background-color: #0b132b; 
+    color: #5bc0be; 
+    padding: 16px 12px; /* Başlıq boşluğu artırıldı */
+    font-size: 14px;     /* Başlıq hərfləri böyüdüldü[cite: 7] */
+    border-bottom: 2px solid #3a506b; 
+    text-align: left; 
+}
+.invoice-table th:text-center { text-align: center; }
+.invoice-table td { 
+    padding: 14px 10px;  /* Sətir aralıqları genişləndirildi[cite: 7] */
+    border-bottom: 1px solid #1c2541; 
+    vertical-align: middle; 
+}
+
+.invoice-table input {
+    width: 100%;
+    border: 1.5px solid #3a506b;
+    padding: 12px 14px;  /* Daxili boşluq artırıldı ki, yazmaq rahat olsun */
+    border-radius: 8px;
+    background-color: #1c2541;
+    color: #ffffff;
+    outline: none;
+    font-size: 16px;     /* Yazı ölçüsü 16px-ə qaldırıldı (mobil/desktop üçün ideal) */
+    font-weight: 600;
+}
+
+/* Sütunların en ölçülərinin tənzimlənməsi */
+.invoice-table th:nth-child(1), .invoice-table td:nth-child(1) { width: 40px; text-align: center; } /* # nömrə */
+.invoice-table th:nth-child(2), .invoice-table td:nth-child(2) { width: 55%; } /* Məhsulun Adı (Genişləndi) */
+.invoice-table th:nth-child(3), .invoice-table td:nth-child(3) { width: 110px; text-align: center; } /* Miqdar (Daraldıldı) */
+.invoice-table th:nth-child(4), .invoice-table td:nth-child(4) { width: 110px; text-align: right; } /* Qiymət (Daraldıldı) */
+.invoice-table th:nth-child(5), .invoice-table td:nth-child(5) { width: 100px; text-align: right; } /* Cəmi */
+.invoice-table th:nth-child(6), .invoice-table td:nth-child(6) { width: 50px; text-align: center; } /* Sil */
+
+
+
+/* Normal halı: İçi daimi qırmızı, parıltısız */
+.btn-delete-row {
+    background-color: #ef4444 !important; /* Daimi qırmızı */
+    border: 1px solid #ef4444 !important;
+    color: #ffffff !important;            /* Yazı ağ */
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;            /* Hamar keçid */
+}
+
+/* Hover halı: Parıltı yoxdur, sadəcə yüngül tündləşmə */
+.btn-delete-row:hover {
+    background-color: #dc2626 !important; /* Bir az daha tünd qırmızı */
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;          /* Neon parıltıya son */
+}
+
+/* "Yeni Mal Əlavə Et" düyməsinin tam eni tutması üçün */
+/* --- YENİ MAL ƏLAVƏ ET DÜYMƏSİ --- */
+.btn-add-row {
+    width: 100%;
+    background-color: #0b132b;        
+    border: 1.5px solid #3a506b;        
+    color: #5bc0be;                   
+    padding: 16px;                    /* Hündürlüyü artırıldı */
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 15px;                  /* Yazı ölçüsü böyüdüldü */
+    text-align: center;
+    margin-top: 10px;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Üstünə gələndə (Hover vəziyyəti) */
+.btn-add-row:hover {
+    background-color: #112240;        /* Bir az daha açıq tünd ton */
+    border-color: #5bc0be;            /* Parlaq firuzəyi border */
+    color: #64ffda;                   /* Mətnin rəngi daha çox parıldayır */
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.3); /* Neon kölgə effekti */
+}
+
+.invoice-footer { 
+    display: flex; 
+    justify-content: flex-end; 
+    background: #0b132b; 
+    padding: 20px 16px; 
+    border-radius: 8px; 
+    border: 1.5px solid #3a506b; 
+    margin-top: 12px;
+}
+.total-amount { 
+    font-size: 16px; 
+    color: #5bc0be; 
+    font-weight: 600;
+}
+
+.total-amount span { 
+    font-size: 26px; /* Rəqəm ölçüsü böyüdüldü */
+    color: #ffffff; 
+    font-weight: 800; 
+    margin-left: 8px; 
+}
+/* Gözləyənlər siyahısı paneli */
+/* ==========================================================================
+   GÖZLƏMƏ PANELİ VƏ SİYAHI STİLLƏRİ (TAM YENİLƏNMİŞ)
+   ========================================================================== */
+.waiting-panel { 
+    background: #1c2541; 
+    padding: 16px; 
+    border-radius: 12px; 
+    border: 1px solid #3a506b; 
+    height: fit-content; 
+}
+
+.panel-header { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid #3a506b; 
+    padding-bottom: 12px; 
+    margin-bottom: 12px; 
+    align-items: center; 
+}
+
+.panel-header h3 { 
+    font-size: 15px; 
+    color: #5bc0be; 
+    font-weight: 700;
+}
+
+.btn-refresh {
+    background-color: #0b132b;          /* Normalda içi tünd */
+    border: 1px solid #3a506b;          /* Sərhədi zərif göy-boz */
+    color: #5bc0be;                     /* Yazı rəngi neon firuzəyi */
+    padding: 6px 12px;                  /* Daxili boşluq */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.25s ease-in-out;  /* Hamar keçid animasiyası */
+}
+
+/* ÜSTÜNƏ GƏLƏNDƏ (HOVER) İÇİNİN FİRUZƏYİ İLƏ DOLMASI */
+.btn-refresh:hover {
+    background-color: #5bc0be;          /* İçi tam firuzəyi ilə dolur */
+    color: #0b132b;                     /* Yazı parlaq fonda oxunması üçün tündləşir */
+    border-color: #5bc0be;              /* Sərhəd firuzəyi olur */
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.5); /* Zərif firuzəyi neon parıltı */
+}
+
+.waiting-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    max-height: 400px; 
+    overflow-y: auto; 
+}
+
+.waiting-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: #0b132b; 
+    border: 1px solid #3a506b; 
+    padding: 12px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+}
+
+.waiting-item:hover { 
+    background: #121b36; 
+}
+
+.btn-delete-waiting {
+    background-color: #ef4444;          /* Normalda içi tünd */
+    border: 1px solid #ef4444;          /* Sərhədi neon qırmızı */
+    color: #ffffff !important;          /* Yazısı neon qırmızı */
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.25s ease-in-out;  /* Hamar keçid animasiyası */
+}
+
+/* ── İKİ MƏRHƏLƏLİ SİLMƏ KUTUSU (BƏLİ / XEYR) ── */
+.waiting-item-confirm-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #2e151b !important;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ef4444;
+    animation: fadeIn 0.2s ease;
+}
+
+.waiting-item-confirm-box span {
+    font-size: 12px;
+    color: #fca5a5 !important;
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.btn-confirm-yes {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 6px 10px !important;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.btn-confirm-no {
+    background: #3a506b !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 6px 10px !important;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Yükləmə halqası */
+.loading-wrapper { display: flex; justify-content: center; padding: 20px 0; }
+.sharp-ring-loader { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 20%, #5bc0be 100%); mask: radial-gradient(farthest-side, transparent 70%, #000 71%); -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%); animation: spin 0.6s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   2. 🏛️ YALNIZ PDF VƏ ÇAP FAZASINDA İŞLƏYƏN RƏSMİ A4 AĞ REJİM STİLİ
+   ========================================================================== */
+.a4-official-page {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 40px 35px !important;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.a4-official-page * {
+    color: #000000 !important;
+    background: transparent !important;
+}
+
+.print-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 35px;
+}
+
+.document-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+}
+
+.print-customer-box .lbl {
+    font-size: 11px;
+    font-weight: bold;
+    color: #444444 !important;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.customer-line {
+    font-size: 16px;
+    font-weight: 700;
+    border-bottom: 1.5px solid #000000;
+    padding-bottom: 3px;
+    min-width: 220px;
+    display: inline-block;
+}
+
+.print-header-right { text-align: right; }
+.company-name { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+.company-sub { font-size: 12px; color: #555555 !important; display: block; margin-bottom: 6px; }
+.company-contacts p { font-size: 12px; margin: 3px 0; color: #333333 !important; }
+
+.print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 35px;
+}
+
+.print-table th {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 10px 5px;
+    border-bottom: 2.5px solid #000000;
+    text-transform: uppercase;
+}
+
+.print-table td {
+    font-size: 13px;
+    padding: 12px 5px;
+    border-bottom: 1.5px solid #94a3b8; /* Xətt daha tünd (boz) və qalın edildi */
+    color: #000000 !important;
+}
+
+/* ── MÖHÜR VƏ YEKUN ÖDƏNİŞİN TAM DƏQİQ NİZAMLANMASI ── */
+.print-footer {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin-top: 50px !important;
+    position: relative !important;
+    padding-bottom: 120px !important; /* Möhür aşağı düşdüyü üçün alt mətnlə məsafə daha da artırıldı */
+    background: transparent !important;
+}
+
+.print-total-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+    background: transparent !important;
+}
+
+/* Möhür bir az da sola və aşağı sürüşdürüldü */
+.a4-official-page .stamp-section {
+    position: absolute !important;
+    left: -540px !important;  /* Daha da sola çəkildi (-450px-dən -540px-ə) */
+    top: -45px !important;    /* Aşağı endirildi (-95px-dən -45px-ə) */
+    width: 230px !important;
+    height: 230px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    z-index: 999 !important;
+}
+
+.a4-official-page .stamp-section img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    mix-blend-mode: multiply !important;
+    background: transparent !important;
+}
+
+.print-total-section {
+    font-size: 16px !important;
+    font-weight: normal !important;
+    color: #000000 !important;
+    background: transparent !important;
+    white-space: nowrap !important;
+}
+
+.print-total-section strong {
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    margin-left: 6px !important;
+    color: #000000 !important;
+    background: transparent !important;
+}
+
+@media print {
+    .no-print { display: none !important; }
+    #hidden-pdf-container { position: static !important; display: block !important; left: 0; top: 0; width: 100%; }
+    body { background: #ffffff !important; padding: 0; }
+}
+
+/* İki mərhələli silmə panelinin dizaynı */
+.waiting-item-confirm-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2e151b;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ef4444;
+    animation: fadeIn 0.2s ease;
+}
+
+.waiting-item-confirm-box span {
+    font-size: 12px;
+    color: #fca5a5 !important;
+    font-weight: 600;
+}
+
+.btn-confirm-yes {
+    background: #ef4444;
+    color: #ffffff !important;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.btn-confirm-no {
+    background: #3a506b;
+    color: #ffffff !important;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Təşəkkür mətnini strukturu pozmadan tam mərkəzə çəkmək */
+.a4-official-page {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.a4-official-page > *:last-child {
+    text-align: center !important;
+    margin-top: 40px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #444444 !important;
+    width: 100% !important;
+}
+
+/* Normal halı: İçi dolu, parıltısız və sakit rəngdə */
+.btn-archive-nav {
+    background-color: #0073c0 ; /* Daimi firuzəyi */
+    border: 1px solid #0073c0 !important;
+    color: #ffffff !important;            /* Yazı ağ */
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;            /* Hamar keçid */
+}
+
+.btn-archive-nav:hover {
+     filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
+    box-shadow: 0 0 10px rgba(0, 19, 105, 0.4); /* Zərif mavi parıltı effekti */
+}
+
+/* Təmizlə Düyməsi (Tünd/Boz ton) */
+#btn-clear { /* HTML-də id-si nədirsə ona uyğunlaşdır (məsələn id="btn-clear") */
+    background-color: #3a506b;
+    border: 1px solid #5bc0be;
+    color: #ffffff;
+}
+#btn-clear:hover {
+    background-color: #1c2541;
+}
+
+/* Yüklənmə Animasiyası Üçün[cite: 4] */
+.loading-wrapper { 
+    display: flex; 
+    justify-content: center; 
+    padding: 30px 0; 
+}
+.sharp-ring-loader { 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    background: conic-gradient(from 0deg, transparent 20%, #5bc0be 100%); 
+    mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    animation: spin 0.6s linear infinite; 
+}
+@keyframes spin { 
+    100% { transform: rotate(360deg); } 
+}
+
+/* Arxiv səhifəsindəki Filtrlə və Təmizlə Düymələrinin Ortaq Stili */
+#btn-filter, #btn-clear {
+    background-color: #0b132b !important;  /* Normalda içi tünd */
+    padding: 8px 18px !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    transition: all 0.25s ease-in-out !important; /* Hamar keçid */
+}
+
+/* ==========================================================================
+   FİLTRLƏ DÜYMƏSİ (YAŞIL)
+   ========================================================================== */
+#btn-filter {
+    border: 1px solid #10b981 !important;  /* Neon yaşıl sərhəd */
+    color: #10b981 !important;             /* Neon yaşıl yazı */
+}
+
+#btn-filter:hover {
+    background-color: #10b981 !important;  /* İçi yaşıl dolur */
+    color: #ffffff !important;             /* Hover zamanı yazı AĞ rəngdə olur */
+    border-color: #10b981 !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6) !important; /* Neon parıltı */
+}
+
+/* ==========================================================================
+   TƏMİZLƏ DÜYMƏSİ (MAVİ / FİRUZƏYİ)
+   ========================================================================== */
+#btn-clear {
+    border: 1px solid #5bc0be !important;  /* Neon firuzəyi sərhəd */
+    color: #5bc0be !important;             /* Neon firuzəyi yazı */
+}
+
+#btn-clear:hover {
+    background-color: #5bc0be !important;  /* İçi firuzəyi dolur */
+    color: #ffffff !important;             /* Hover zamanı yazı AĞ rəngdə olur */
+    border-color: #5bc0be !important;
+    box-shadow: 0 0 12px rgba(91, 192, 190, 0.6) !important; /* Mavi neon parıltı */
+}
+
+/* Yüklənmə Animasiyası */
+.loading-wrapper { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    padding: 30px 0; 
+    width: 100%;
+}
+.sharp-ring-loader { 
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%; 
+    background: conic-gradient(from 0deg, transparent 20%, #5bc0be 100%); 
+    mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    animation: spin 0.6s linear infinite; 
+}
+@keyframes spin { 
+    100% { transform: rotate(360deg); } 
+}
+
+
+/* Mobil telefonlar üçün uyğunlaşdırma (Ekran 768px-dən kiçik olduqda) */
+@media (max-width: 768px) {
+    /* Düymələrin yan-yana yox, alt-alta düzülməsi və tam eni tutması üçün */
+    .btn {
+        width: 100%;
+        display: block;
+        margin-bottom: 10px; /* Düymələr arasında boşluq */
+        padding: 14px 20px;  /* Telefonda barmaqla rahat basılsın deyə daxili boşluğu bir az artırırıq */
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /* Əgər düymələr bir flex container daxilindədirsə, onları alt-alta veririk */
+    .panel-header, 
+    .button-container { /* düymələri saxlayan ana klassın adı nədirsə */
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+}
+
+.panel-header { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid #3a506b; 
+    padding-bottom: 12px; 
+    margin-bottom: 12px; 
+    align-items: center; 
+    cursor: pointer; /* Üstünə gələndə əmr damğası çıxması üçün */
+}
+
+.panel-title-area h3 { 
+    font-size: 15px; 
+    color: #5bc0be; 
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#toggle-arrow {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+/* Panel açıq olanda oxun aşağıdan yuxarı dönməsi üçün */
+.panel-header.active #toggle-arrow {
+    transform: rotate(180deg);
+}
+
+.panel-header-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Yeni yaradılan səhifə düymələri paneli */
+.quick-nav-panel {
+    background: #1c2541;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a506b;
+}
+
+.quick-nav-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Panel başlığı kliklənmə və ox ayarları */
+.panel-header { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid #3a506b; 
+    padding-bottom: 12px; 
+    margin-bottom: 12px; 
+    align-items: center; 
+    cursor: pointer; 
+}
+
+.panel-title-area h3 { 
+    font-size: 15px; 
+    color: #5bc0be; 
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#toggle-arrow {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+/* Panel açıq olanda oxun yuxarı dönməsi */
+.panel-header.active #toggle-arrow {
+    transform: rotate(180deg);
+}
+
+.panel-header-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Sağ panel elementləri arasındakı boşluq və səliqə */
+.right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Gözləyən qaimələr panelinin başlığı və ox animasiyası */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #3a506b;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.panel-title-area h3 {
+    font-size: 15px;
+    color: #5bc0be;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#toggle-arrow {
+    font-size: 12px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.panel-header.active #toggle-arrow {
+    transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   YENİ ƏLAVƏ EDİLƏN MODAL VƏ SAĞ PANEL ÜSLUBLARI (TƏMİZ CSS)
+   ========================================================================== */
+
+.right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sahifeler-section {
+    background: #1c2541;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a506b;
+}
+
+.sahifeler-section h3 {
+    font-size: 15px;
+    color: #5bc0be;
+    font-weight: 700;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #3a506b;
+    padding-bottom: 8px;
+}
+
+.sahifeler-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-modal-open-custom {
+    border-color: #5bc0be !important;
+    color: #5bc0be !important;
+}
+
+/* Modal Overlay və Pəncərə Dizaynı */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(11, 19, 43, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal pəncərəsinin enini bir qədər böyüdürük */
+.modal-content {
+    background-color: #1c2541;
+    border: 1px solid #3a506b;
+    padding: 24px;
+    border-radius: 12px;
+    width: 600px; /* Eni artırıldı */
+    max-width: 95%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Gözləyən qaimə kartı daxilində məbləğ və gözləmə düyməsi tərzi */
+.waiting-item-left {
+    flex: 1;
+}
+
+.waiting-item-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-toggle-total {
+    background: #3a506b;
+    color: #fff;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.btn-toggle-total:hover {
+    background: #5bc0be;
+    color: #0b132b;
+}
+
+.modal-header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #3a506b;
+    padding-bottom: 10px;
+}
+
+.modal-header-box h3 {
+    color: #5bc0be;
+    margin: 0;
+    font-size: 16px;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.modal-list-box {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modal-list-box .waiting-item {
+    background: #0b132b;
+    border: 1px solid #3a506b;
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-list-box .waiting-item:hover {
+    background: #121b36;
+}
+
+.hidden-pdf-wrapper {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 210mm; /* A4 standart en ölçüsü ilə dəyişdirildi */
+    background: #ffffff !important;
+}
+
+.a4-official-page {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 25px 30px !important; /* Kənar boşluqlar A4 üçün balanslaşdırıldı */
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 297mm; /* Tam A4 hündürlüyü */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between;
+}
+
+.waiting-panel {
+    margin-top: 0 !important;
+}
+
+#waiting-list-container {
+    display: none;
+}
+
+/* Normal halı: İçi daimi dolu və səliqəli */
+.btn-page {
+    background-color: #0073c0 !important; /* Daimi firuzəyi rənglə dolu */
+    border: 1px solid #0073c0 !important;
+    color: #ffffff !important;            /* Yazı ağ rəngdə */
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-page:hover {
+    filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
+    box-shadow: 0 0 10px rgba(0, 115, 192, 0.4); /* Zərif mavi parıltı effekti */
+}
+
+/* Normal halı: İçi dolu və sadə */
+.btn-tamamla {
+    background: #0073c0;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #0073c0;          /* Firuzəyi çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
+}
+
+
+/* Üstünə gələndə (hover) içi dolacaq */
+.btn-tamamla:hover {
+ filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
+    box-shadow: 0 0 10px rgba(0, 115, 192, 0.4); /* Zərif mavi parıltı effekti */
+}
+
+.date-filter-input {
+    background-color: #0b132b !important;
+    border: 1px solid #3a506b !important;
+    color: #5bc0be !important;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    color-scheme: dark; /* Tünd rejimdə təqvim ikonunun düzgün çıxması üçün */
+}
+
+.date-filter-input:focus {
+    border-color: #5bc0be !important;
+}
+
+
+.blur-price {
+    filter: blur(5px);
+    cursor: pointer;
+    transition: filter 0.3s ease;
+}
+
+.blur-price.revealed {
+    filter: blur(0);
+}
+
+/* Qiymət qutusu - çərçivə təmiz qalır, yalnız mətn bulanıq olur */
+.waiting-total-badge {
+    font-size: 13px;
+    color: transparent; /* Mətni şəffaf edirik */
+    text-shadow: 0 0 8px #5bc0be; /* Mətnə bulanıqlıq effekti veririk */
+    font-weight: 700;
+    background: #0b132b;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #3a506b;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+    display: inline-block !important;
+    white-space: nowrap;
+}
+
+/* Üzərinə vurduqda mətn netləşir */
+.waiting-total-badge.revealed {
+    color: #5bc0be; /* Normal rəngini qaytarırıq */
+    text-shadow: none; /* Bulanıqlığı ləğv edirik */
+}
+
+/* Bağlamaq (×) düyməsi üçün kiçik qırmızı çərçivə */
+.close-waiting-modal, .modal-close-btn {
+    border: 1px solid #ff4d4d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: #ff4d4d;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.close-waiting-modal:hover, .modal-close-btn:hover {
+    background: rgba(255, 77, 77, 0.1);
+}
+
+
+.template-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.template-item-btn {
+    background-color: #1e293b;
+    color: #ffffff;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.template-item-btn:hover {
+    background-color: #334155;
+    border-color: #5bc0be;
+    box-shadow: 0 0 8px rgba(91, 192, 190, 0.2);
+}
+
+.template-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #5bc0be;
+    margin-bottom: 5px;
+}
+
+.template-details {
+    font-size: 13px;
+    color: #94a3b8;
+}
+.modal-overlay { /* Əgər arxa fon qaralması üçün overlay varsa */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content { /* Hazır Şablonu Seç pəncərəsinin əsas elementi */
+    position: relative; /* Əgər overlay içində deyilsə, fixed də ola bilər */
+    width: 450px;
+    max-width: 90%;
+    background: #1a1f2c; /* Dizaynınıza uyğun rəng */
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}

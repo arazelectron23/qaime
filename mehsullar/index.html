@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <title>Məhsullar Bazası</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="shortcut icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <a href="../index.html" class="btn-back">← Geri qayıt</a>
+            <h2>Məhsul İdarəetməsi</h2>
+           
+        </div>
+        <div class="form-card">
+            <input type="text" id="prod-name" placeholder="Məhsulun adı">
+            <input type="number" id="prod-price" placeholder="Qiyməti (AZN)" step="0.01">
+            <button id="btn-add-prod">Məhsul Əlavə Et</button>
+        </div>
+
+        <div class="search-card">
+            <input type="text" id="prod-search" placeholder="Məhsul axtar...">
+        </div>
+
+        <table class="prod-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Məhsul Adı</th>
+                    <th>Qiymət</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody id="prod-tbody">
+                <!-- Firebase-dən gələn məhsullar -->
+            </tbody>
+        </table>
+    </div>
+
+ <!-- Redaktə Modalı -->
+<div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        <h3 style="margin-top: 0; color: #fff; font-size: 16px; margin-bottom: 15px;">Məhsulu Redaktə Et</h3>
+        
+        <div style="margin-bottom: 10px;">
+            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Adı</label>
+            <input type="text" id="modal-prod-name" placeholder="Məhsulun adı" style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Qiymət</label>
+            <input type="number" id="modal-prod-price" placeholder="Qiyməti" step="0.01" style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button id="modal-btn-cancel" style="background: #374151; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Ləğv et</button>
+            <button id="modal-btn-save" style="background: #3b82f6; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Yadda saxla</button>
+        </div>
+    </div>
+</div>
+
+    <script type="module" src="./app2.js"></script>
+</body>
+</html>

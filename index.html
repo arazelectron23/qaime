@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=0.3, shrink-to-fit=no">
+    <link rel="manifest" href="manifest.json">
+    <title>Araz Electron - Satış Qaiməsi</title>
+    <link rel="stylesheet" href="style.css?v=2">
+    <!-- html2pdf Kitabxanası -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <link rel="shortcut icon" type="image/png" href="./favicon.png">
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/az.js"></script>
+</head>
+
+<body>
+
+    <div class="app-container no-print">
+        <!-- Üst İdarəetmə Paneli -->
+        <div class="control-panel">
+            <input type="text" id="customer-input" placeholder="Usta və ya Müştəri adı(nömrə) daxil edin...">
+            <input type="text" id="flatpickr" placeholder="Tarix seçin..." style="padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600;">
+            <div class="actions">
+                <button class="btnNewInvoice" id="btn-new-invoice">Yeni+</button>
+                <button id="btn-complete-invoice" class="btn-tamamla">Tamamla</button>
+                <button class="btn btn-blue" id="btn-print">Çap Et</button>
+                <button class="btn btn-yellow" id="btn-waiting">Gözləməyə Al</button>
+                <button class="btn btn-green" id="btn-download">YÜKLƏ</button>
+            </div>
+        </div>
+
+       <div class="main-content">
+            <!-- Sol tərəf: Daxiletmə və Cədvəl -->
+            <div class="invoice-box">
+                
+              <!-- Sürətli Şablon Seçin Bloku -->
+<div class="template-select-box" style="background-color: #101935; border: 1px solid #1f2d5a; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+    <div style="color: #8da4ef; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span>📋</span> Sürətli Şablon Seçin:
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button type="button" id="btn-open-template-modal" class="btn btn-blue" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: #0b132b; border: 1px solid #233554; color: #fff; padding: 12px 15px; border-radius: 8px; font-weight: normal;">
+            <span id="selected-template-name" style="color: #94a3b8;">-- Şablon seçilməyib --</span>
+            <span style="color: #f39c12;">📁</span>
+        </button>
+    </div>
+</div>
+
+                <div class="invoice-table-wrapper">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th class="col-num">#</th>
+                                <th class="col-name">Məhsulun Adı</th>
+                                <th class="col-qty">Miqdar</th>
+                                <th class="col-price">Qiymət</th>
+                                <th class="col-total">Cəmi</th>
+                                <th class="col-del">Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-items-body">
+                            <!-- Dinamik sətirlər bura gələcək -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <button class="btn-add-row" id="btn-add-item">+ Yeni Mal Əlavə Et</button>
+
+                <div class="invoice-footer">
+                    <div class="total-amount">Yekun Ödəniş: <span id="total-price-view">0.00</span> AZN</div>
+                </div>
+            </div>
+
+            <!-- Sağ tərəf: Navigasiya və Gözləmə Paneli -->
+            <div class="right-sidebar">
+                <div class="sahifeler-section">
+                    <h3>Səhifələr</h3>
+                    <div class="sahifeler-buttons">
+                        <a href="arxiv/" id="btn-arxiv" class="btn-page" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Arxiv</a>
+                        <button id="btn-waiting-modal-open" class="btn-archive-nav btn-modal-open">Gözləmə siyahısı</button>
+                        <a href="mehsullar/" class="btn-page">Məhsullar</a>
+                        <a href="sablon/" class="btn-page">Şablonlar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <!-- Gözləyən Qaimələr Modalı -->
+    <!-- Gözləyən Qaimələr Modalı -->
+<div id="waiting-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="width: 700px; max-width: 95%;">
+        <div class="modal-header-box">
+            <h3>Gözləyən Qaimələr</h3>
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+            <input type="text" id="waiting-search-input" placeholder="Axtar..." class="date-filter-input" style="flex: 2;">
+            <input type="text" id="waiting-date-start" placeholder="Başlanğıc tarix..." class="date-filter-input" style="flex: 1;">
+            <input type="text" id="waiting-date-end" placeholder="Bitiş tarix..." class="date-filter-input" style="flex: 1;">
+        </div>
+
+        <div class="modal-list-box" id="waiting-modal-list"></div>
+    </div>
+</div>
+
+    <div id="hidden-pdf-container" class="hidden-pdf-wrapper">
+        <div id="official-print-page" class="a4-official-page"></div>
+    </div>
+
+    <!-- Şablon Seçim Modalı -->
+<div id="template-select-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px;">
+        <span id="custom-modal-close" style="float: right; cursor: pointer; font-size: 24px; color: #fff;">&times;</span>
+        <h3 style="color: #5bc0be; margin-bottom: 15px;">Hazır Şablonu Seçin</h3>
+        
+        <input type="text" id="template-search-input" placeholder="Şablon axtar..." style="width: 100%; padding: 10px; margin-bottom: 12px; background: #0b132b; border: 1px solid #233554; color: #fff; border-radius: 6px; outline: none;">
+        
+        <div id="template-list-container" class="template-list">
+            
+            <div style="display: flex; justify-content: center; align-items: center; padding: 20px; width: 100%;">
+    <div class="sharp-ring-loader"></div>
+</div>
+        </div>
+    </div>
+</div>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr@4.6.13/dist/l10n/az.js"></script>
+    <script type="module" src="app.js?v=4"></script>
+</body>
+
+</html>

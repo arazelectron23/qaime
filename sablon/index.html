@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <title>Hazır Şablonlar</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="./sablon.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <a href="../index.html" class="btn-back">← Geri qayıt</a>
+            <h2>Şablonlar</h2>
+        </div>
+        
+        <!-- Şablon Əlavə Etmə Formu -->
+        <div class="form-card" style="flex-direction: column; align-items: stretch; gap: 15px;">
+            <input type="text" id="tpl-name" placeholder="Şablonun adı (məs: Standart Quraşdırma)">
+            
+           <div style="background: #0b0f19; padding: 10px; border-radius: 6px; border: 1px solid #1f2937;">
+                <label style="font-size: 13px; color: #9ca3af; display: block; margin-bottom: 8px;">Məhsulları seçin:</label>
+                <!-- Axtarış inputu əlavə olundu -->
+                <input type="text" id="product-search-input" placeholder="Məhsul axtar..." style="width: 100%; margin-bottom: 8px; box-sizing: border-box;">
+                <div id="product-select-container" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                    <!-- Firebase-dən gələn məhsullar bura gələcək -->
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <button id="btn-open-modal" class="btn-back">Şablon Əlavə Et</button>
+            </div>
+        </div>
+
+        <div class="search-card">
+            <input type="text" id="tpl-search" placeholder="Şablon axtar...">
+        </div>
+
+        <!-- Şablonların Cədvəli -->
+        <table class="prod-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Şablon Adı</th>
+                    <th>Məhsullar və Sayı</th>
+                    <th>Ümumi Qiymət</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody id="tpl-tbody">
+                <!-- Şablonlar bura gələcək -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sayların Daxil Edilməsi və Təsdiq Modalı -->
+    <div id="qty-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <h3 id="modal-title" style="margin-top: 0; color: #fff; font-size: 16px; margin-bottom: 12px;">Seçilmiş Məhsulların Sayı</h3>
+            
+            <div style="font-size: 12px; color: #9ca3af; margin-bottom: 8px;">Zəhmət olmasa məhsulların miqdarını qeyd edin:</div>
+            
+            <div id="modal-qty-container" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #0b0f19; padding: 10px; border-radius: 6px; border: 1px solid #1f2937; margin-bottom: 15px;">
+                <!-- Seçilən məhsullar və say inputları bura düşəcək -->
+            </div>
+
+            <!-- Ümumi qiymət hissəsi sola hizalandı -->
+            <div style="font-size: 14px; font-weight: bold; color: #5bc0be; margin-bottom: 15px; display: flex; justify-content: flex-start; gap: 8px; align-items: center;">
+                <span>Ümumi Qiymət:</span>
+                <span id="modal-calculated-total">0.00</span> 
+                <span>AZN</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="modal-btn-cancel" style="background: #374151; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Ləğv et</button>
+                <button id="modal-btn-save" style="background: #5bc0be; color: #fff; font-weight: bold; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Yadda Saxla</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./sablon.js"></script>
+</body>
+</html>

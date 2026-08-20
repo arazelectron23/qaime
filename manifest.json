@@ -1,0 +1,19 @@
+{
+  "short_name": "Qaimə Portal",
+  "name": "Satış Qaimə",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "scope": "/qaime/",
+  "start_url": "/qaime/index.html",
+  "display": "standalone"
+}

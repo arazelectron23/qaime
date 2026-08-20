@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=0.3, shrink-to-fit=no">
+    <link rel="manifest" href="../manifest.json">
+    <title>Araz Electron - Arxiv Qaiməsi</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="arxiv.css">
+     <link rel="icon" type="image/png" href="../favicon.png">
+   <link rel="shortcut icon" type="image/png" href="../favicon.png">
+    <!-- Təqvim üçün stili bura qoyuruq -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+</head>
+<body>
+
+<div class="archive-container">
+    <a href="../index.html" class="nav-btn">← Əsas Səhifəyə Qayıt</a>
+    
+    <div class="document-title" style="color: #5bc0be; margin-top: 15px; margin-bottom: 20px; font-size: 22px; font-weight: 700;">
+        Qaimə Satış Arxivi
+    </div>
+
+    <!-- Filtrləmə Sahəsi -->
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label>Başlanğıc Tarix:</label>
+            <input type="text" id="start-date" placeholder="Seçin...">
+        </div>
+        <div class="filter-group">
+            <label>Bitmə Tarix:</label>
+            <input type="text" id="end-date" placeholder="Seçin...">
+        </div>
+        <div class="filter-buttons">
+           <button id="btn-filter">Filtrlə</button>
+           <button id="btn-clear">Təmizlə</button>
+           <button id="btn-bulk-delete" class="btn-danger">Sil</button>
+        </div>
+    </div>
+
+    <!-- Yeni Sadələşdirilmiş Arxiv Cədvəli -->
+    <div class="invoice-box">
+        <div class="invoice-table-wrapper">
+            <table class="invoice-table" id="archive-table">
+                <thead>
+                    <tr>
+                        <th>Tarix / Saat</th>
+                        <th>Müştəri Adı</th>
+                        <th style="text-align: right;">Məbləğ</th>
+                        <th style="text-align: center; width: 220px;">Əməliyyatlar</th>
+                    </tr>
+                </thead>
+                <tbody id="archive-tbody">
+                    <!-- JS tərəfindən doldurulacaq -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Təqvim və PDF skriptləri -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/az.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script type="module" src="./arxiv.js"></script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+body {
+    padding: 20px;
+    background-color: #0b132b;
+    color: #ffffff;
+}
+
+.archive-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-btn {
+    background-color: #1c2541;          /* Səhifə fonundan seçilməsi üçün bir az açıq tünd göy */
+    color: white;                       /* Normalda yazı ağ */
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid #5bc0be;          /* Sərhədi neon firuzəyi */
+    display: inline-block;
+    transition: all 0.25s ease-in-out;  /* Hamar keçid */
+}
+
+/* ÜSTÜNƏ GƏLƏNDƏ (HOVER) İÇİNİN FİRUZƏYİ İLƏ DOLMASI VƏ YAZININ AĞ QALMASI */
+.nav-btn:hover { 
+    background-color: #5bc0be; 
+    color: white;                       /* Hover zamanı yazı AĞ rəngdə qalır */
+    border-color: #5bc0be;
+    box-shadow: 0 0 12px rgba(91, 192, 190, 0.6); /* Zərif firuzəyi neon parıltı */
+}
+
+.filter-panel {
+    background: #1c2541;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid #3a506b;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.filter-group { display: flex; align-items: center; gap: 10px; }
+.filter-panel label { font-weight: bold; color: #5bc0be; }
+.filter-panel input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #3a506b;
+    background: #0b132b;
+    color: white;
+    outline: none;
+}
+
+
+
+
+.btn-print-row {
+    background: #10b981;
+    border: 1px solid #34d399;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+.btn-print-row:hover { background: #059669; }
+
+/* Loading animasiyası */
+.loading-wrapper { display: flex; justify-content: center; align-items: center; padding: 40px 0; width: 100%; }
+.sharp-ring-loader { 
+    width: 36px; height: 36px; border-radius: 50%; 
+    background: conic-gradient(from 0deg, transparent 20%, #5bc0be 100%); 
+    mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    animation: spinArxiv 0.6s linear infinite; 
+}
+@keyframes spinArxiv { 100% { transform: rotate(360deg); } }
+
+.invoice-table tbody tr:hover { background-color: #121b36; }
+.invoice-table td { padding: 14px 12px; vertical-align: middle; }
+
+/* Əməliyyatlar xanasının daxili nizamı */
+.action-cell-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 100%;
+}
+
+/* Bütün arxiv düymələrinin ortaq başlanğıc standartı */
+.action-cell-buttons button, 
+.btn-delete-archive {
+    height: 36px; /* Hamısının hündürlüyü eyni */
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.btn-download {
+    background-color: #086088;          /* Arxa fonu bir az ağartdım (seçilməsi üçün) */
+    border: 1px solid #086088;          /* Sərhədi neon firuzəyi */
+    color: #ffffff;                     /* Yazı rəngi ağ */
+    padding: 10px 20px;                 /* Ölçüləri tam rahat sıxılsın deyə bir az artırdım */
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    margin-right: 8px;
+    transition: all 0.25s ease-in-out;  /* Hamar animasiya */
+}
+
+/* 2. Çap Et Düyməsi */
+.btn-print-row {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+    color: #10b981;
+}
+.btn-print-row:hover {
+    background: #10b981;
+    color: #ffffff;
+}
+
+/* 3. Sil Düyməsi */
+.btn-delete-archive {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+}
+.btn-delete-archive:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+/* Silinsin? Təsdiq qutusu çıxanda hündürlüyün qorunması */
+.archive-confirm-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1f121b;
+    border: 1px solid #ef4444;
+    padding: 0 10px;
+    height: 36px; /* Düymələrlə eyni hündürlükdə */
+    border-radius: 6px;
+    box-sizing: border-box;
+    animation: fadeInArchive 0.2s ease-in-out;
+}
+
+.archive-confirm-box span {
+    font-size: 11px;
+    color: #fca5a5;
+    font-weight: bold;
+}
+
+.archive-confirm-box button {
+    height: 24px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.archive-confirm-box .btn-yes {
+    background: #ef4444;
+    color: white;
+}
+.archive-confirm-box .btn-yes:hover { background: #b91c1c; }
+
+.archive-confirm-box .btn-no {
+    background: #4b5563;
+    color: white;
+}
+.archive-confirm-box .btn-no:hover { background: #374151; }
+
+@keyframes fadeInArchive {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Normal ekranda müvəqqəti yaradılan qaimə sahəsini gizlədirik */
+#dynamic-print-zone {
+    display: none;
+}
+
+/* ÇAP ETMƏ ANINDA İŞƏ DÜŞƏN STİLLƏR */
+@media print {
+    /* Səhifədəki bütün elementləri (filtrlər, cədvəllər, background və s.) tam gizlət */
+    body * {
+        visibility: hidden;
+    }
+    
+    /* Yalnız dinamik yaradılmış qaimə zonasını və onun daxilindəki hər şeyi görünən et */
+    #dynamic-print-zone, #dynamic-print-zone * {
+        visibility: visible;
+    }
+    
+    /* Qaiməni səhifənin ən yuxarı sol küncünə yerləşdir və tam oturt */
+    #dynamic-print-zone {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    /* Brauzerin avtomatik çıxardığı üst/alt başlıqları (tarix, link və s.) təmizləmək üçün */
+    @page {
+        size: auto;
+        margin: 0mm;
+    }
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 1px solid #ef4444 !important;
+    color: #ef4444 !important;
+    height: 38px; /* Digər üst düymələrin standart hündürlüyü */
+    padding: 0 20px; /* Filtrlə düyməsi ilə eyni enlik boşluğu */
+    font-size: 14px; /* Digər düymələrlə eyni mətn ölçüsü */
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-danger:hover {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* Düymənin ətrafındakı müvəqqəti konteynerin nizamı */
+.bulk-delete-wrapper {
+    margin-left: 12px; /* Sol tərəflə ideal ara məsafəsi */
+}
+
+/* Checkbox-ın ətrafındakı kliklənə bilən sahə */
+.custom-checkbox-wrapper {
+    position: relative;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+/* Standart çirkin brauzer checkbox-ını gizlədirik */
+.custom-checkbox-wrapper input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Yeni modern kvadrat formalı checkbox (Boş vəziyyəti) */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #1e293b; /* Sənin dizayna uyğun tünd fon */
+    border: 2px solid #475569; /* Kənar cizgisi */
+    border-radius: 6px; /* Kənarların yumşaldılması */
+    transition: all 0.2s ease-in-out;
+}
+
+/* Siçanı üzərinə gətirəndə kənarları bir az işıqlansın */
+.custom-checkbox-wrapper:hover input ~ .checkmark {
+    border-color: #5bc0be;
+}
+
+/* Checkbox seçiləndə (Checked olanda) */
+.custom-checkbox-wrapper input:checked ~ .checkmark {
+    background-color: #0284c7; /* Neon Göy/Mavi fon */
+    border-color: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.5); /* Modern parıltı effekti */
+}
+
+/* Seçim quş işarəsi (İlkin olaraq gizlidir) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Seçiləndə quş işarəsini göstər */
+.custom-checkbox-wrapper input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Quş işarəsinin forması və dizaynı */
+.custom-checkbox-wrapper .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
+
+/* Müştəri adı xanasının strukturu */
+.customer-name-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Redaktə qələm düyməsi */
+.btn-edit-name {
+    background: #1e293b;
+    border: 1px solid #334155;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Düymənin üzərinə gələndə (Hover effekti) */
+.btn-edit-name:hover {
+    background: #0f172a;
+    border-color: #5bc0be;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(91, 192, 190, 0.2);
+}
+
+/* Aktiv redaktə inputu */
+.edit-name-input {
+    background: #0f172a;
+    border: 1px solid #5bc0be;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    outline: none;
+    width: 140px;
+    box-shadow: 0 0 6px rgba(91, 192, 190, 0.3);
+}
+
+/* "HAMISINI SEÇ" DÜYMƏSİNİN NORMAL HALI */
+#btn-select-all-dynamic {
+    background-color: #1c2541;          /* Səhifə fonundan seçilməsi üçün açıq tünd göy */
+    border: 1px solid #5bc0be;          /* Sərhədi neon firuzəyi */
+    color: #ffffff !important;          /* Yazısı ağ rəngdə */
+    padding: 6px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 120px;
+    text-align: center;
+    box-sizing: border-box;
+    transition: all 0.25s ease-in-out;  /* Keçid animasiyası */
+}
+
+/* ÜSTÜNƏ GƏLƏNDƏ (HOVER) İÇİNİN DOLMASI VƏ YAZININ AĞ QALMASI */
+#btn-select-all-dynamic:hover {
+    background-color: #5bc0be;          /* İçi tam firuzəyi dolur */
+    color: #ffffff !important;          /* Yazı tam ağ rəngdə qalır */
+    border-color: #5bc0be;
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.6); /* Firuzəyi neon parıltı */
+}
+
+/* "SİL" (TOPLU SİLMƏ) DÜYMƏSİNİN NORMAL HALI */
+#btn-bulk-delete {
+    background-color: #3b141a;          /* Seçilməsi üçün bir az açıq tünd qırmızı fon */
+    border: 1px solid #ef4444;          /* Sərhədi neon qırmızı */
+    color: #ef4444 !important;          /* Yazı rəngi neon qırmızı */
+    padding: 6px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    width: 80px;
+    text-align: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition: all 0.25s ease-in-out;  /* Hamar keçid animasiyası */
+}
+
+/* ÜSTÜNƏ GƏLƏNDƏ (HOVER) İÇİNİN TAM QIRMIZI OLMASI VƏ YAZININ AĞ QALMASI */
+#btn-bulk-delete:hover {
+    background-color: #ef4444;          /* İçi tam qırmızı rənglə dolur */
+    color: #ffffff !important;          /* Yazı tam ağ rəngdə qalır */
+    border-color: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6); /* Qırmızı neon parıltı */
+}
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Əməliyyat düymələrinin konteyneri */
+.action-cell-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* "Bax" düyməsinin təmiz dizaynı */
+.btn-view {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Modal üslubları */
+.archive-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(3px);
+}
+
+.archive-modal-content {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    padding: 25px;
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    font-family: inherit;
+}
+
+.archive-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.archive-modal-close {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* ///////////////////////////////////////////////////// */
+
+/* Ümumi məbləğ və göz düyməsinin yerləşdiyi konteyner */
+.total-amount-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.total-amount-box .label-text {
+    color: #5bc0be;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.total-amount-box .amount-value {
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* Göz işarəsi düyməsi */
+.btn-toggle-visibility {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.btn-toggle-visibility:hover {
+    transform: scale(1.15);
+}

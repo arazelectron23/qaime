@@ -1,0 +1,94 @@
+body {
+    background-color: #0b0f19;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.btn-back, #btn-add-prod {
+    background: #0073c0;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #0073c0;          /* Firuzəyi çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
+}
+
+/* Üstünə gələndə (hover) içi dolacaq */
+.btn-back:hover, #btn-add-prod:hover {
+    background: #0073c0;              /* Fon tamamilə firuzəyi olur */
+    color: #ffff;                     /* Yazı tünd rəngə keçir ki, oxunsun */
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.4); /* Zərif parıltı */
+}
+.form-card, .search-card {
+    background: #111827;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #1f2937;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+input {
+    background: #0b0f19;
+    border: 1px solid #374151;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+    flex: 1;
+}
+.prod-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111827;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #1f2937;
+}
+.prod-table th, .prod-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #1f2937;
+    font-size: 14px;
+}
+.prod-table th {
+    background: #1f2937;
+    color: #9ca3af;
+}
+.btn-del {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sharp-ring-loader { 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    background: conic-gradient(from 0deg, transparent 20%, #5bc0be 100%); 
+    mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%); 
+    animation: spin 0.6s linear infinite; 
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
