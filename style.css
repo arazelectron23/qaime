@@ -882,18 +882,17 @@ body {
 }
 
 /* Modal Overlay və Pəncərə Dizaynı */
-.modal-overlay {
+.modal-overlay { /* Və ya modalı saxlayan ana div */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(11, 19, 43, 0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center; /* Üfüqi olaraq tən ortada */
+    align-items: center;     /* Şaquli olaraq tən ortada */
+    background-color: rgba(0, 0, 0, 0.5); /* İstəyə görə arxa fonun qaralması */
+    z-index: 1000;
 }
 
 /* Modal pəncərəsinin enini bir qədər böyüdürük */
