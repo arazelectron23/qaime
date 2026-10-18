@@ -10,34 +10,34 @@ body {
 }
 
 .nav-btn {
-    background-color: #1c2541;          /* Səhifə fonundan seçilməsi üçün bir az açıq tünd göy */
-    color: white;                       /* Normalda yazı ağ */
-    padding: 10px 20px;
-    border-radius: 8px;
-    text-decoration: none;
+   background: #0073c0;          /* İlk başda içi boşdur */
+    color: #ffff;                     /* Yazı firuzəyi rəngdədir */
+    border: 2px solid #0073c0;          /* Firuzəyi çərçivə */
+    padding: 8px 16px;
+    border-radius: 6px;
     font-weight: bold;
-    border: 1px solid #5bc0be;          /* Sərhədi neon firuzəyi */
-    display: inline-block;
-    transition: all 0.25s ease-in-out;  /* Hamar keçid */
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;   /* Hamar keçid effekti */
 }
 
 /* ÜSTÜNƏ GƏLƏNDƏ (HOVER) İÇİNİN FİRUZƏYİ İLƏ DOLMASI VƏ YAZININ AĞ QALMASI */
 .nav-btn:hover { 
-    background-color: #5bc0be; 
-    color: white;                       /* Hover zamanı yazı AĞ rəngdə qalır */
-    border-color: #5bc0be;
-    box-shadow: 0 0 12px rgba(91, 192, 190, 0.6); /* Zərif firuzəyi neon parıltı */
+ background: #0073c0;              /* Fon tamamilə firuzəyi olur */
+    color: #ffff;                     /* Yazı tünd rəngə keçir ki, oxunsun */
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.4); /* Zərif parıltı */
 }
 
 .filter-panel {
     background: #1c2541;
-    padding: 16px 20px;
+    padding: 14px 18px;
     border-radius: 12px;
     border: 1px solid #3a506b;
     display: flex;
-    gap: 20px;
+    gap: 12px;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Elementlərin aşağı sətirə keçməsinin qarşısını alır */
+    overflow-x: auto;   /* Əgər ekran kiçik olarsa, sətrin pozulmaması üçün horizontal sürüşmə yaradır */
     margin-bottom: 25px;
 }
 
@@ -525,4 +525,22 @@ body {
 
 .btn-toggle-visibility:hover {
     transform: scale(1.15);
+}
+
+.archive-search-input {
+    width: 100%;
+    background: #1c2541;
+    border: 1px solid #3a506b;
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.archive-search-input:focus {
+    border-color: #5bc0be;
+    box-shadow: 0 0 8px rgba(91, 192, 190, 0.3);
 }

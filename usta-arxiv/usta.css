@@ -1,0 +1,592 @@
+/* ==========================================================================
+   USTA ARXİVİ - ÜMUMİ SƏHİFƏ VƏ ELEMENT STİLLƏRİ
+   ========================================================================== */
+.usta-archive-body {
+    background-color: #0b132b;
+    color: #fff;
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+.archive-main-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.archive-header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.archive-title {
+    color: #5bc0be;
+    margin: 0;
+}
+
+.archive-nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.usta-list-btn {
+    padding: 8px 15px;
+    font-size: 13px;
+}
+
+.archive-back-link {
+    text-decoration: none;
+    padding: 8px 15px;
+    font-size: 13px;
+}
+
+.search-panel-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.usta-search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px;
+    background: #1c2541;
+    border: 1px solid #3a506b;
+    border-radius: 10px;
+    color: #00ffd5;
+    outline: none;
+}
+
+.usta-filter-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Aradakı məsafəni bir az artırırıq */
+    max-width: 500px;
+    margin: 15px auto 5px auto;
+}
+
+.usta-trigger-wrapper {
+    position: relative;
+    flex: 1;
+    z-index: 1; /* Inputu arxa qata salırıq */
+}
+
+.usta-select-dropdown-trigger {
+    margin: 0 !important;
+    width: 100%;
+    background: #1c2541;
+    border: 1px solid #3a506b;
+    padding: 12px 16px;
+    border-radius: 100px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #cbd5e1;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.usta-select-dropdown-trigger:hover {
+    border-color: #5bc0be;
+}
+
+.dropdown-arrow {
+    font-size: 12px;
+    color: #5bc0be;
+}
+
+.usta-custom-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #1c2541;
+    border: 1px solid #3a506b;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 1000;
+    padding: 10px;
+    flex-direction: column;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+.dropdown-search-input {
+    width: 100%;
+    padding: 10px 8px;
+    background: #0b132b;
+    border: 1px solid #3a506b;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.dropdown-items-container {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.usta-archive-container-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.archive-loader-wrapper {
+    text-align: center;
+    padding: 40px;
+}
+
+.loader-text {
+    color: #94a3b8;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   BULANIQ MƏBLƏĞ BADGE-İ (Kliklənməni bloklamayan üsul)
+   ========================================================================== */
+.blurred-amount-badge {
+    background-color: #1c2541;
+    border: 1px solid #3a506b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: transparent; /* Mətni şəffaf edirik */
+    text-shadow: 0 0 7px rgba(91, 192, 190, 0.7); /* Bulanıqlıq effekti veririk */
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.blurred-amount-badge.revealed {
+    color: #5bc0be; /* Aydın rəng */
+    text-shadow: none; /* Kölgəni silirik ki, tam oxunaqlı olsun */
+}
+/* ==========================================================================
+   MODAL VƏ DİGƏR STİLLƏR
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeInModal 0.2s ease;
+}
+
+.modal-content {
+    background-color: #1c2541;
+    border: 1px solid #3a506b;
+    padding: 20px;
+    border-radius: 12px;
+    width: 480px;
+    max-width: 95%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: #f1f5f9;
+}
+
+.modal-header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #3a506b;
+    padding-bottom: 10px;
+}
+
+.modal-header-box h3 {
+    color: #5bc0be;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+    font-size: 18px;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+    background: #ff4d4d;
+    color: #ffffff !important;
+}
+
+.modal-inner-section {
+    margin-bottom: 15px;
+    background: #0b132b;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #3a506b;
+}
+
+.modal-section-heading {
+    color: #5bc0be;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.modal-text-input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #3a506b;
+    border-radius: 6px;
+    background: #1c2541;
+    color: #fff;
+    outline: none;
+    margin-bottom: 10px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.modal-save-wrapper {
+    text-align: right;
+}
+
+.usta-save-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.usta-modal-scroll-list {
+    max-height: 180px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.sharp-ring-loader2 {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 20%, #5bc0be 100%);
+    mask: radial-gradient(farthest-side, transparent 70%, #000 71%);
+    -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%);
+    animation: spin 0.8s linear infinite;
+    margin: 35px auto 0 auto;
+}
+
+@keyframes spin { 
+    100% { transform: rotate(360deg); } 
+}
+
+/* ==========================================================================
+   Müasir Usta Arxivi Kart Dizaynı
+   ========================================================================== */
+.usta-archive-card {
+    background: linear-gradient(135deg, #1c2541 0%, #131b2e 100%);
+    border: 1px solid #3a506b;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s ease;
+}
+
+.usta-archive-card:hover {
+    border-color: #5bc0be;
+    box-shadow: 0 6px 20px rgba(91, 192, 190, 0.15);
+}
+
+.usta-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.usta-card-name {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.usta-card-date {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.btn-view-items {
+    margin-top: 4px;
+    background: rgba(91, 192, 190, 0.1);
+    color: #5bc0be;
+    border: 1px solid #5bc0be;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+.btn-view-items:hover {
+    background: #5bc0be;
+    color: #0b132b;
+}
+
+.usta-card-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.usta-card-meta {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.usta-card-price {
+    color: #5bc0be;
+    font-weight: 800;
+    font-size: 17px;
+}
+
+.usta-card-badge {
+    font-size: 10px;
+    background: rgba(2, 132, 199, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.btn-delete-archive {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-archive:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* Düymələrin əsas stili */
+.btn-blue2 {
+    background-color: #0073c0 !important;
+    color: #ffffff !important;
+    border: 2px solid #0073c0 !important;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Üstünə gələndə (hover) effekt */
+.btn-blue2:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 10px rgba(0, 115, 192, 0.4);
+}
+
+/* Axtarış Inputu */
+.archive-search-input {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    color: #ffffff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.archive-search-input:focus {
+    border-color: #5bc0be;
+    box-shadow: 0 0 6px rgba(91, 192, 190, 0.3);
+}
+
+/* Tarix Bölməsini Tam Mərkəzdə Saxlayan Konteyner */
+.date-filter-wrapper {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Tarix Yazısı */
+.date-filter-label {
+    color: #5bc0be;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Tarix Inputu */
+.date-filter-input {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    width: 180px;
+    text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.date-filter-input:focus {
+    border-color: #5bc0be;
+    box-shadow: 0 0 6px rgba(91, 192, 190, 0.3);
+}
+
+/* Təmizlə Düyməsi */
+.btn-reset-date {
+    background: #334155;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-reset-date:hover {
+    background: #475569;
+}
+
+/* ==========================================================================
+   FLATPICKR TÜND VƏ FİRUZƏYİ TEMA STİLLƏRİ
+   ========================================================================== */
+.flatpickr-calendar {
+    background: #0f172a !important;
+    border: 1px solid #1e293b !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+}
+
+/* Yuxarı ox göstəricisi */
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+    border-bottom-color: #0f172a !important;
+}
+
+/* Təqvim başlığı (Ay/İl hissəsi) */
+.flatpickr-months {
+    background: #1c2541 !important;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+    color: #5bc0be !important;
+    font-weight: bold !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    color: #5bc0be !important;
+    fill: #5bc0be !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #ffffff !important;
+}
+
+/* Həftənin günləri başlığı */
+span.flatpickr-weekday {
+    background: #1c2541 !important;
+    color: #94a3b8 !important;
+    font-weight: bold !important;
+}
+
+/* Günlərin xanaları */
+.flatpickr-day {
+    color: #ffffff !important;
+    border-radius: 6px !important;
+}
+
+.flatpickr-day:hover {
+    background: #1e293b !important;
+    color: #5bc0be !important;
+}
+
+/* Seçilmiş gün */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #5bc0be !important;
+    color: #0b132b !important;
+    border-color: #5bc0be !important;
+    font-weight: bold !important;
+    box-shadow: 0 0 10px rgba(91, 192, 190, 0.4);
+}
+
+/* Bu günün xanası */
+.flatpickr-day.today {
+    border-color: #5bc0be !important;
+    color: #5bc0be !important;
+}
+
+.flatpickr-day.today:hover {
+    background: #5bc0be !important;
+    color: #0b132b !important;
+}
+
+/* Qonşu ayların günləri */
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #334155 !important;
+}

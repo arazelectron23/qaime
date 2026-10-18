@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, initial-scale=0.3, shrink-to-fit=no">
     <link rel="manifest" href="../manifest.json">
-    <title>Araz Electron - Arxiv Qaiməsi</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="arxiv.css">
-     <link rel="icon" type="image/png" href="../favicon.png">
-   <link rel="shortcut icon" type="image/png" href="../favicon.png">
+    <title>Müştəri arxivi</title>
+    <link rel="stylesheet" href="../style.css?v=6.1">
+    <link rel="stylesheet" href="arxiv.css?v=6.1">
+     <link rel="icon" type="image/png" href="../favicon.png?v=1">
+   <link rel="shortcut icon" type="image/png" href="../favicon.png?v=1">
     <!-- Təqvim üçün stili bura qoyuruq -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
@@ -16,10 +16,13 @@
 <body>
 
 <div class="archive-container">
-    <a href="../index.html" class="nav-btn">← Əsas Səhifəyə Qayıt</a>
-    
-    <div class="document-title" style="color: #5bc0be; margin-top: 15px; margin-bottom: 20px; font-size: 22px; font-weight: 700;">
-        Qaimə Satış Arxivi
+    <div class="archive-header-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <a href="../index.html" class="nav-btn">← Əsas Səhifəyə Qayıt</a>
+        <div class="document-title" style="color: #5bc0be; font-size: 22px; font-weight: 700; flex-grow: 1; text-align: center;">
+            Müştəri Arxivi
+        </div>
+        <!-- Ölçü tarazlığı üçün görünməz boşluq (başlığı tam mərkəzdə saxlayır) -->
+        <div style="width: 150px;"></div>
     </div>
 
     <!-- Filtrləmə Sahəsi -->
@@ -33,10 +36,14 @@
             <input type="text" id="end-date" placeholder="Seçin...">
         </div>
         <div class="filter-buttons">
-           <button id="btn-filter">Filtrlə</button>
            <button id="btn-clear">Təmizlə</button>
            <button id="btn-bulk-delete" class="btn-danger">Sil</button>
         </div>
+    </div>
+
+    <!-- Ayrı Axtarış Paneli -->
+    <div class="search-panel-box" style="margin-bottom: 20px;">
+        <input type="text" id="archive-search-input" class="archive-search-input" placeholder="Müştəri adına görə axtar...">
     </div>
 
     <!-- Yeni Sadələşdirilmiş Arxiv Cədvəli -->

@@ -52,7 +52,6 @@ function showNotification(message, type = 'success') {
 }
 
 const archiveTbody = document.getElementById('archive-tbody');
-const btnFilter = document.getElementById('btn-filter');
 const btnClear = document.getElementById('btn-clear');
 const startDateInput = document.getElementById('start-date');
 const endDateInput = document.getElementById('end-date');
@@ -74,9 +73,18 @@ let isSelectMode = false; // Seçim rejiminin aktiv olub-olmadığını izləyir
 let searchInput = null;   // Axtarış inputu üçün dəyişən
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Tarix formatını birbaşa Y-m-d edirik ki, filtrləmədə problem yaranmasın
-    flatpickr("#start-date", { locale: "az", dateFormat: "Y-m-d" });
-    flatpickr("#end-date", { locale: "az", dateFormat: "Y-m-d" });
+    // Tarix seçilən kimi avtomatik filtrlənməsi üçün onChange əlavə edirik
+    flatpickr("#start-date", { 
+        locale: "az", 
+        dateFormat: "Y-m-d",
+        onChange: function() { applyAllFilters(); }
+    });
+    
+    flatpickr("#end-date", { 
+        locale: "az", 
+        dateFormat: "Y-m-d",
+        onChange: function() { applyAllFilters(); }
+    });
     
     initSearchInput(); 
     fetchArchiveList();
@@ -86,8 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
 let totalAmountSpan = null; // Məbləğin yazıldığı element üçün qlobal dəyişən
 let isAmountVisible = false; // Gözün ilkin vəziyyəti (gizli)
 
-// ÜMUMİ MƏBLƏĞ VƏ GÖZ BÖLMƏSİNİN YARADILMASI
+// ÜMUMİ MƏBLƏĞ VƏ GÖZ BÖLMƏSİNİN YARADILMASI (Axtarış inputu artıq HTML-də ayrıca yerləşdirilib)
 function initSearchInput() {
+    searchInput = document.getElementById('archive-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            applyAllFilters();
+        });
+    }
+
     const container = btnClear?.parentElement;
     if (!container) return;
 
@@ -96,46 +111,13 @@ function initSearchInput() {
     container.style.alignItems = "center";
     container.style.gap = "8px";
 
-    searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.id = 'archive-search-input';
-    searchInput.placeholder = 'Müştəri axtar...';
-    
-    searchInput.style.cssText = `
-        background: #0f172a;
-        border: 1px solid #1e293b;
-        color: #fff;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 14px;
-        outline: none;
-        width: 150px;
-        flex-shrink: 1;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    `;
-
-    searchInput.addEventListener('focus', () => {
-        searchInput.style.borderColor = '#5bc0be';
-        searchInput.style.boxShadow = '0 0 6px rgba(91, 192, 190, 0.3)';
-    });
-    searchInput.addEventListener('blur', () => {
-        searchInput.style.borderColor = '#1e293b';
-        searchInput.style.boxShadow = 'none';
-    });
-
-    searchInput.addEventListener('input', () => {
-        applyAllFilters();
-    });
-
-    container.appendChild(searchInput);
-
-    // ÜMUMİ MƏBLƏĞ VƏ GÖZ BÖLMƏSİNİN YARADILMASI (Başlanğıcda tam bulanıq/gizli *** ilə)
+    // Ümumi məbləğ və göz bölməsi
     const totalBox = document.createElement('div');
     totalBox.className = 'total-amount-box';
     totalBox.innerHTML = `
         <span class="label-text">Ümumi:</span>
         <span class="amount-value" id="archive-total-value" style="filter: blur(5px); transition: filter 0.2s ease; cursor: pointer;" title="Göstərmək üçün klikləyin">********</span>
-        <button class="btn-toggle-visibility" id="btn-toggle-amount" title="Göstər / Gizlət"></button>
+        <button class="btn-toggle-visibility" id="btn-toggle-amount" title="Göstər / Gizlət">👁️</button>
     `;
 
     container.appendChild(totalBox);
@@ -143,16 +125,14 @@ function initSearchInput() {
     totalAmountSpan = document.getElementById('archive-total-value');
     const toggleBtn = document.getElementById('btn-toggle-amount');
 
-    // Həm göz düyməsinə, həm də ulduzların üzərinə kliklədikdə açılıb-bağlansın
     const toggleVisibility = () => {
         isAmountVisible = !isAmountVisible;
         updateTotalDisplay(window.currentFilteredInvoices || allInvoices);
     };
 
-    toggleBtn.addEventListener('click', toggleVisibility);
-    totalAmountSpan.addEventListener('click', toggleVisibility);
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleVisibility);
+    if (totalAmountSpan) totalAmountSpan.addEventListener('click', toggleVisibility);
 }
-s
 
 async function fetchArchiveList() {
     archiveTbody.innerHTML = `
@@ -205,10 +185,9 @@ function renderArchiveTable(dataArray) {
     }
 
     dataArray.forEach((data) => {
-      let dateStr = "---";
+        let dateStr = "---";
         if (data.timestamp) {
             const t = data.timestamp.toDate();
-            // Yalnız tarix, saat olmadan və gün.ay.il formatında
             dateStr = String(t.getDate()).padStart(2, '0') + "." + 
                       String(t.getMonth() + 1).padStart(2, '0') + "." + 
                       t.getFullYear();
@@ -227,14 +206,14 @@ function renderArchiveTable(dataArray) {
                     <span class="date-text">${dateStr}</span>
                 </div>
             </td>
-           <td style="font-weight: 700;">
-    <div class="customer-name-cell">
-        <span class="customer-name">${data.customerName || 'Naməlum Müştəri'}</span>
-        <button class="btn-edit-name" onclick="editCustomerName(this, '${data.id}')">✏️</button>
-    </div>
-</td>
+            <td style="font-weight: 700;">
+                <div class="customer-name-cell">
+                    <span class="customer-name">${data.customerName || 'Naməlum Müştəri'}</span>
+                    <button class="btn-edit-name" onclick="editCustomerName(this, '${data.id}')">✏️</button>
+                </div>
+            </td>
             <td style="text-align: right; font-weight: bold; color: #5bc0be;">${Number(data.totalAmount || 0).toFixed(2)} AZN</td>
-           <td style="text-align: center; position: relative;">
+            <td style="text-align: center; position: relative;">
                 <div class="action-cell-buttons">
                     <button class="btn-view">Bax</button>
                     <button class="btn-download">Yüklə (PDF)</button>
@@ -295,20 +274,34 @@ function renderArchiveTable(dataArray) {
 }
 
 function applyAllFilters() {
-    const startVal = startDateInput.value; // Artıq flatpickr sayəsində "YYYY-MM-DD" formatında gələcək
-    const endVal = endDateInput.value;
+    const startVal = startDateInput.value.trim();
+    const endVal = endDateInput.value.trim();
     const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
     let filtered = allInvoices.filter(invoice => {
         if (startVal || endVal) {
-            if (!invoice.timestamp) return false;
+            if (!invoice.timestamp && !invoice.invoiceDate) return false;
+            
+            let checkDate = "";
             
             // Firebase timestamp-ini YYYY-MM-DD formatına çeviririk
-            const t = invoice.timestamp.toDate();
-            const year = t.getFullYear();
-            const month = String(t.getMonth() + 1).padStart(2, '0');
-            const day = String(t.getDate()).padStart(2, '0');
-            const checkDate = `${year}-${month}-${day}`;
+            if (invoice.timestamp && typeof invoice.timestamp.toDate === 'function') {
+                const t = invoice.timestamp.toDate();
+                const year = t.getFullYear();
+                const month = String(t.getMonth() + 1).padStart(2, '0');
+                const day = String(t.getDate()).padStart(2, '0');
+                checkDate = `${year}-${month}-${day}`;
+            } 
+            else if (invoice.invoiceDate) {
+                const parts = invoice.invoiceDate.split('.');
+                if (parts.length === 3) {
+                    checkDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                } else {
+                    checkDate = invoice.invoiceDate;
+                }
+            }
+
+            if (!checkDate) return false;
 
             if (startVal && endVal && (checkDate < startVal || checkDate > endVal)) return false;
             if (startVal && !endVal && checkDate < startVal) return false;
@@ -343,19 +336,19 @@ function initDeleteTrigger() {
     btnSelectAll = document.createElement('button');
     btnSelectAll.id = 'btn-select-all-dynamic';
     btnSelectAll.textContent = 'Hamısını Seç';
+    btnSelectAll.style.display = 'none';
 
-    // Sətirbərəst bütün dizaynı sildik, sadəcə başlanğıcda gizli qalması hissəsini saxlayırıq
-    btnSelectAll.style.display = 'none';    const bulkActionWrapper = document.createElement('div');
+    const bulkActionWrapper = document.createElement('div');
     bulkActionWrapper.id = 'bulk-action-wrapper';
     bulkActionWrapper.style.cssText = "display: none; vertical-align: middle; flex-shrink: 0;";
 
-   btnBulkDelete = document.createElement('button');
-   btnBulkDelete.id = 'btn-bulk-delete';
-   btnBulkDelete.textContent = 'Sil';
+    btnBulkDelete = document.createElement('button');
+    btnBulkDelete.id = 'btn-bulk-delete';
+    btnBulkDelete.textContent = 'Sil';
 
-   bulkActionWrapper.appendChild(btnBulkDelete);
-   filterBtnContainer.appendChild(btnSelectAll);
-   filterBtnContainer.appendChild(bulkActionWrapper);
+    bulkActionWrapper.appendChild(btnBulkDelete);
+    filterBtnContainer.appendChild(btnSelectAll);
+    filterBtnContainer.appendChild(bulkActionWrapper);
 
     function updateSelectAllButtonText() {
         const checkboxes = document.querySelectorAll('.archive-select-checkbox');
@@ -422,7 +415,6 @@ function initDeleteTrigger() {
         const checkedBoxes = document.querySelectorAll('.archive-select-checkbox:checked');
         
         if (checkedBoxes.length === 0) {
-            // alert əvəzinə qırmızı xəbərdarlıq bildirişi
             return showNotification("Zəhmət olmasa silmək istədiyiniz qaimələri sol tərəfdən işarələyin!", "error");
         }
 
@@ -577,12 +569,8 @@ function printInvoice(data, dateStr) {
     printContainer.remove();
 }
 
-// Filtrləmə və təmizləmə düymələrinin işləməsi üçün təhlükəsiz dinləyici
+// "Təmizlə" düyməsinin işləməsi üçün dinləyici
 document.addEventListener('click', (e) => {
-    if (e.target && (e.target.id === 'btn-filter' || e.target.closest('#btn-filter'))) {
-        applyAllFilters();
-    }
-    
     if (e.target && (e.target.id === 'btn-clear' || e.target.closest('#btn-clear'))) {
         if (startDateInput) startDateInput.value = '';
         if (endDateInput) endDateInput.value = '';

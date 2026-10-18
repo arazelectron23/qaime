@@ -108,13 +108,19 @@ function renderTable(data) {
     });
 }
 
-// Modal daxilində "Yadda saxla" düyməsi
 modalBtnSave.addEventListener('click', async () => {
     const name = modalProdName.value.trim();
     const price = parseFloat(modalProdPrice.value);
 
-    if (!name || isNaN(price)) {
-        showNotification("Məlumatları düzgün daxil edin!", "error");
+    // ➔ BURADA DA 0.01 yoxlaması edirik
+    if (!name || isNaN(price) || price < 0.01) {
+        showNotification("Məlumatları düzgün daxil edin və qiymət ən azı 0.01 olmalıdır!", "error");
+        return;
+    }
+
+    const exists = allProducts.some(p => p.id !== editingProductId && p.name.trim().toLowerCase() === name.toLowerCase());
+    if (exists) {
+        showNotification("Bu adda başqa məhsul mövcuddur!", "error");
         return;
     }
 
@@ -141,13 +147,19 @@ window.addEventListener('click', (e) => {
     }
 });
 
-// Yeni məhsul əlavə etmə düyməsi
 btnAddProd.addEventListener('click', async () => {
     const name = prodNameInput.value.trim();
     const price = parseFloat(prodPriceInput.value);
     
-    if (!name || isNaN(price)) {
-        showNotification("Məlumatları düzgün daxil edin!", "error");
+    // ➔ BURADA 0.01-dən kiçik olmasını yoxlayırıq
+    if (!name || isNaN(price) || price < 0.01) {
+        showNotification("Məlumatları düzgün daxil edin və qiymət ən azı 0.01 olmalıdır!", "error");
+        return;
+    }
+
+    const exists = allProducts.some(p => p.name.trim().toLowerCase() === name.toLowerCase());
+    if (exists) {
+        showNotification("Bu adda məhsul artıq mövcuddur!", "error");
         return;
     }
 

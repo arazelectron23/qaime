@@ -2,10 +2,10 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <title>Məhsullar Bazası</title>
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="shortcut icon" type="image/png" href="../favicon.png">
-    <link rel="stylesheet" href="style.css">
+    <title>Məhsul Bazası</title>
+    <link rel="icon" type="image/png" href="../favicon.png?v=1">
+    <link rel="shortcut icon" type="image/png" href="../favicon.png?v=1">
+    <link rel="stylesheet" href="style.css?v=6.1">
 </head>
 <body>
     <div class="container">
@@ -16,7 +16,7 @@
         </div>
         <div class="form-card">
             <input type="text" id="prod-name" placeholder="Məhsulun adı">
-            <input type="number" id="prod-price" placeholder="Qiyməti (AZN)" step="0.01">
+            <input type="number" id="prod-price" placeholder="Qiyməti (AZN)" min="0.01" step="0.01">
             <button id="btn-add-prod">Məhsul Əlavə Et</button>
         </div>
 
@@ -27,7 +27,7 @@
         <table class="prod-table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>№</th>
                     <th>Məhsul Adı</th>
                     <th>Qiymət</th>
                     <th>Əməliyyat</th>
@@ -51,7 +51,7 @@
 
         <div style="margin-bottom: 15px;">
             <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Qiymət</label>
-            <input type="number" id="modal-prod-price" placeholder="Qiyməti" step="0.01" style="width: 100%; box-sizing: border-box;">
+            <input type="number" id="modal-prod-price" placeholder="Qiyməti" step="1" style="width: 100%; box-sizing: border-box;">
         </div>
 
         <div style="display: flex; gap: 10px; justify-content: flex-end;">

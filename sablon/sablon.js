@@ -24,12 +24,11 @@ let currentSelectedQuantities = {};
 async function fetchProductsForTemplate() {
     if (!productSelectContainer) return;
     
-    // Animasiya (Spinner) əlavə edilir
- productSelectContainer.innerHTML = `
-    <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 20px;">
-        <div class="sharp-ring-loader"></div>
-    </div>
-`;
+    productSelectContainer.innerHTML = `
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 20px;">
+            <div class="sharp-ring-loader"></div>
+        </div>
+    `;
     
     try {
         const q = query(collection(db, "products"), orderBy("name", "asc"));
@@ -42,6 +41,7 @@ async function fetchProductsForTemplate() {
     } catch (err) {
         console.error("Məhsulları çəkmə xətası:", err);
         productSelectContainer.innerHTML = '<div style="color:#ef4444; text-align:center; padding:10px;">Xəta baş verdi!</div>';
+        showNotification("Məhsulları yükləmək mümkün olmadı!", "error");
     }
 }
 
@@ -83,7 +83,6 @@ function renderProductCheckboxes(filterText = '') {
     });
 }
 
-// Axtarış inputu üçün Dinləyici (Listener) əlavə edin
 if (productSearchInput) {
     productSearchInput.addEventListener('input', (e) => {
         renderProductCheckboxes(e.target.value);
@@ -94,13 +93,13 @@ if (btnOpenModal) {
     btnOpenModal.addEventListener('click', () => {
         const name = tplNameInput ? tplNameInput.value.trim() : '';
         if (!editingTplId && !name) {
-            alert("Zəhmət olmasa şablon adını daxil edin!");
+            showNotification("Zəhmət olmasa şablon adını daxil edin!", "error");
             return;
         }
 
         const selectedIds = Object.keys(currentSelectedQuantities);
         if (selectedIds.length === 0) {
-            alert("Zəhmət olmasa ən azı bir məhsul seçin!");
+            showNotification("Zəhmət olmasa ən azı bir məhsul seçin!", "error");
             return;
         }
 
@@ -116,10 +115,9 @@ function openQtyModal() {
     if (!modalQtyContainer) return;
     modalQtyContainer.innerHTML = '';
     
-    // Əgər heç nə seçilməyibsə, modalı açma
     const selectedIds = Object.keys(currentSelectedQuantities);
     if (selectedIds.length === 0) {
-        alert("Zəhmət olmasa ən azı bir məhsul seçin!");
+        showNotification("Zəhmət olmasa ən azı bir məhsul seçin!", "error");
         return;
     }
 
@@ -170,7 +168,7 @@ if (modalBtnSave) {
         const realName = editingTplId ? (modalTitle.dataset.tplRealName || nameVal) : nameVal;
 
         if (!realName) {
-            alert("Şablon adı boş ola bilməz!");
+            showNotification("Şablon adı boş ola bilməz!", "error");
             return;
         }
         
@@ -194,6 +192,7 @@ if (modalBtnSave) {
                     items
                 });
                 editingTplId = null;
+                showNotification("Şablon uğurla yeniləndi!", "success");
             } else {
                 await addDoc(collection(db, "templates"), {
                     name: nameVal,
@@ -201,6 +200,7 @@ if (modalBtnSave) {
                     timestamp: serverTimestamp()
                 });
                 if (tplNameInput) tplNameInput.value = '';
+                showNotification("Şablon uğurla əlavə edildi!", "success");
             }
 
             if (qtyModal) qtyModal.style.display = 'none';
@@ -209,7 +209,7 @@ if (modalBtnSave) {
             fetchTemplates();
         } catch (err) {
             console.error("Yadda saxlama xətası:", err);
-            alert("Xəta baş verdi. Konsola baxın.");
+            showNotification("Xəta baş verdi!", "error");
         }
     });
 }
@@ -240,6 +240,7 @@ async function fetchTemplates() {
         renderTable(allTemplates);
     } catch (err) {
         console.error(err);
+        showNotification("Şablonları yükləmək mümkün olmadı!", "error");
     }
 }
 
@@ -309,8 +310,10 @@ function renderTable(data) {
                 try {
                     await deleteDoc(doc(db, "templates", t.id));
                     fetchTemplates();
+                    showNotification("Şablon silindi!", "success");
                 } catch (err) {
                     console.error("Silmə xətası:", err);
+                    showNotification("Şablonu silmək mümkün olmadı!", "error");
                 }
             });
 
@@ -384,3 +387,10 @@ function showNotification(message, type = 'success') {
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
+
+// Modalın çölünə (fonuna) kliklədikdə bağlanması
+window.addEventListener('click', (e) => {
+    if (qtyModal && e.target === qtyModal) {
+        qtyModal.style.display = 'none';
+    }
+});
