@@ -5,30 +5,41 @@
     <title>Məhsul Bazası</title>
     <link rel="icon" type="image/png" href="../favicon.png?v=1">
     <link rel="shortcut icon" type="image/png" href="../favicon.png?v=1">
-    <link rel="stylesheet" href="style.css?v=6.2">
+    <link rel="stylesheet" href="style.css?v=6.4">
 </head>
 <body>
     <div class="container">
         <div class="header-section">
             <a href="../index.html" class="btn-back">← Geri qayıt</a>
             <h2>Məhsul İdarəetməsi</h2>
-           
         </div>
+
+        <!-- Məhsul Əlavə Etmə Paneli -->
         <div class="form-card">
             <input type="text" id="prod-name" placeholder="Məhsulun adı">
+            <select id="prod-category" style="background: #0b0f19; border: 1px solid #374151; color: #fff; padding: 8px 12px; border-radius: 6px; outline: none; cursor: pointer;">
+                <!-- JS vasitəsilə dolacaq -->
+            </select>
             <input type="number" id="prod-price" placeholder="Qiyməti (AZN)" min="0.01" step="0.01">
             <button id="btn-add-prod">Məhsul Əlavə Et</button>
         </div>
 
-        <div class="search-card">
-            <input type="text" id="prod-search" placeholder="Məhsul axtar...">
+        <!-- Axtarış, Kateqoriya Filtri və Kateqoriyalar Modalını Açan Düymə -->
+        <div class="search-card" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="prod-search" placeholder="Məhsul axtar..." style="flex: 1;">
+            <select id="filter-category" style="background: #0b0f19; border: 1px solid #374151; color: #fff; padding: 8px 12px; border-radius: 6px; outline: none; cursor: pointer; width: 160px;">
+                <option value="all">Bütün Kateqoriyalar</option>
+            </select>
+            <button id="btn-open-cat-modal" style="background: #374151; color: #fff; border: 1px solid #4b5563; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">⚙️ Kateqoriyalar</button>
         </div>
 
+        <!-- Cədvəl -->
         <table class="prod-table">
             <thead>
                 <tr>
                     <th>№</th>
                     <th>Məhsul Adı</th>
+                    <th>Kateqoriya</th>
                     <th>Qiymət</th>
                     <th>Əməliyyat</th>
                 </tr>
@@ -39,28 +50,56 @@
         </table>
     </div>
 
- <!-- Redaktə Modalı -->
-<div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
-    <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
-        <h3 style="margin-top: 0; color: #fff; font-size: 16px; margin-bottom: 15px;">Məhsulu Redaktə Et</h3>
-        
-        <div style="margin-bottom: 10px;">
-            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Adı</label>
-            <input type="text" id="modal-prod-name" placeholder="Məhsulun adı" style="width: 100%; box-sizing: border-box;">
-        </div>
+    <!-- Redaktə Modalı (Məhsul üçün) -->
+    <div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <h3 style="margin-top: 0; color: #fff; font-size: 16px; margin-bottom: 15px;">Məhsulu Redaktə Et</h3>
+            
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Adı</label>
+                <input type="text" id="modal-prod-name" placeholder="Məhsulun adı" style="width: 100%; box-sizing: border-box;">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Qiymət</label>
-            <input type="number" id="modal-prod-price" placeholder="Qiyməti" step="1" style="width: 100%; box-sizing: border-box;">
-        </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Kateqoriya</label>
+                <select id="modal-prod-category" style="width: 100%; background: #0b0f19; border: 1px solid #374151; color: #fff; padding: 8px 12px; border-radius: 6px; outline: none; box-sizing: border-box;">
+                    <!-- JS ilə dolacaq -->
+                </select>
+            </div>
 
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button id="modal-btn-cancel" style="background: #374151; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Ləğv et</button>
-            <button id="modal-btn-save" style="background: #3b82f6; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Yadda saxla</button>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Qiymət</label>
+                <input type="number" id="modal-prod-price" placeholder="Qiyməti" min="0.01" step="0.01" style="width: 100%; box-sizing: border-box;">
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="modal-btn-cancel" style="background: #374151; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Ləğv et</button>
+                <button id="modal-btn-save" style="background: #3b82f6; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Yadda saxla</button>
+            </div>
         </div>
     </div>
-</div>
 
-    <script type="module" src="./app2.js?v=6.2"></script>
+    <!-- KATEQORİYALARIN İDARƏ EDİLMƏSİ MODALI -->
+    <div id="category-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: #111827; padding: 25px; border-radius: 10px; border: 1px solid #1f2937; width: 400px; max-width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); color: #fff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #1f2937; padding-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 18px; color: #5bc0be;">Kateqoriyaları İdarə Et</h3>
+                <button id="cat-modal-close" style="background: none; border: none; color: #ef4444; font-size: 20px; cursor: pointer; font-weight: bold;">✕</button>
+            </div>
+
+            <!-- Yeni Kateqoriya Əlavə Etmə -->
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="text" id="new-cat-input" placeholder="Yeni kateqoriya adı..." style="flex: 1; background: #0b0f19; border: 1px solid #374151; color: #fff; padding: 8px 12px; border-radius: 6px; outline: none;">
+                <button id="btn-add-cat" style="background: #10b981; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">Əlavə Et</button>
+            </div>
+
+            <!-- Mövcud Kateqoriyaların Siyahısı -->
+            <div id="category-list-container" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                <!-- JS ilə dolacaq -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./app2.js?v=6.5"></script>
 </body>
 </html>

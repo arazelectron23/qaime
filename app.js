@@ -1094,7 +1094,7 @@ if (ustaDebtorSelect) {
 
             ustaDebtItemsList.innerHTML = '';
             if (selectedUstaDebtsData.length === 0) {
-                ustaDebtItemsList.innerHTML = '<div style="color: #00ff0d; text-align: center; font-size: 15px; padding: 15px;">Bu ustanın adında heç bir məhsulu yoxdur.</div>';
+                ustaDebtItemsList.innerHTML = '<div style="color: #00ff0d; text-align: center; font-size: 15px; padding: 15px;">Bu ustanın adında heç bir məhsul yoxdur.</div>';
                 const totalView = document.getElementById('selected-items-total');
                 if (totalView) totalView.innerText = '0.00';
                 return;
