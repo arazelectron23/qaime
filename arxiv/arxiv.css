@@ -52,22 +52,6 @@ body {
     outline: none;
 }
 
-
-
-
-.btn-print-row {
-    background: #10b981;
-    border: 1px solid #34d399;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 12px;
-    transition: all 0.2s;
-}
-.btn-print-row:hover { background: #059669; }
-
 /* Loading animasiyası */
 .loading-wrapper { display: flex; justify-content: center; align-items: center; padding: 40px 0; width: 100%; }
 .sharp-ring-loader { 
@@ -109,38 +93,57 @@ body {
 }
 
 .btn-download {
-    background-color: #086088;          /* Arxa fonu bir az ağartdım (seçilməsi üçün) */
-    border: 1px solid #086088;          /* Sərhədi neon firuzəyi */
+    background-color: #3b82f6;          /* "Bax" düyməsi ilə eyni mavi rəng */
+    border: none;                       /* Çərçivəni ləğv edirik */
     color: #ffffff;                     /* Yazı rəngi ağ */
-    padding: 10px 20px;                 /* Ölçüləri tam rahat sıxılsın deyə bir az artırdım */
+    padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 13px;
     margin-right: 8px;
-    transition: all 0.25s ease-in-out;  /* Hamar animasiya */
+    transition: box-shadow 0.3s ease;   /* Yalnız parıltı üçün hamar keçid */
 }
 
-/* 2. Çap Et Düyməsi */
+/* Yerindən oynamır, rəngi dəyişmir, sadəcə yüngül parıldayır */
+.btn-download:hover {
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); /* Zərif mavi parıltı effekti */
+}
+
+/* 2. Çap Et Düyməsi (İçi dolu və zərif parıltılı) */
 .btn-print-row {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid #10b981;
-    color: #10b981;
-}
-.btn-print-row:hover {
-    background: #10b981;
-    color: #ffffff;
+    background-color: #10b981;          /* İçi tam yaşıl rənglə doludur */
+    border: 1px solid #10b981;          /* Yaşıl çərçivə */
+    color: #ffffff;                     /* Yazı ağ rəngdədir */
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: box-shadow 0.3s ease;   /* Yalnız parıltı üçün hamar keçid */
 }
 
-/* 3. Sil Düyməsi */
-.btn-delete-archive {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid #ef4444;
-    color: #ef4444;
+/* Üstünə gələndə yerindən oynamır, sadəcə yüngül yaşıl parıltı verir */
+.btn-print-row:hover {
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6); /* Zərif yaşıl parıltı effekti */
 }
+
+/* 3. Sil Düğmesi (İçi dolu ve zərif parıltılı) */
+.btn-delete-archive {
+    background-color: #ef4444;          /* İçi tam kırmızı renk ile dolu */
+    border: 1px solid #ef4444;          /* Kırmızı çerçeve */
+    color: #ffffff;                     /* Yazı rengi beyaz */
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: box-shadow 0.3s ease;   /* Yalnızca parıltı için geçiş efekti */
+}
+
+/* Üzerine gelindiğinde yerinden oynamaz, yalnızca hafif kırmızı bir parıltı oluşturur */
 .btn-delete-archive:hover {
-    background: #ef4444;
-    color: #ffffff;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); /* Zarif kırmızı parıltı efekti */
 }
 
 /* Silinsin? Təsdiq qutusu çıxanda hündürlüyün qorunması */
@@ -425,9 +428,8 @@ body {
     align-items: center;
 }
 
-/* "Bax" düyməsinin təmiz dizaynı */
 .btn-view {
-    background: #3b82f6;
+    background: #3b82f6;          /* İlk başda içi boşdur */
     color: #fff;
     border: none;
     padding: 6px 12px;
@@ -435,8 +437,13 @@ body {
     cursor: pointer;
     font-weight: bold;
     font-size: 12px;
+    transition: box-shadow 0.3s ease; /* Yalnız parıltı keçidi üçün */
 }
 
+/* Yerindən oynamır, rəngi dəyişmir, sadəcə yüngül parıldayır */
+.btn-view:hover {
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); /* İstədiyin zərif parıltı */
+}
 /* Modal üslubları */
 .archive-modal-overlay {
     position: fixed;

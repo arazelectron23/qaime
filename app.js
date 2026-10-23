@@ -1,9 +1,3 @@
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js', { scope: '/qaime/' })
-        .then(() => console.log("Service Worker aktivləşdirildi."))
-        .catch(err => console.error("SW qeydiyyat xətası:", err));
-}
-
 import { 
     db, 
     collection, 
@@ -14,7 +8,7 @@ import {
     serverTimestamp 
 } from "./firebase.js"; 
 
-import { where, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { where, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const openTemplateModalBtn = document.getElementById('btn-open-template-modal'); 
 const templateSelectModal = document.getElementById('template-select-modal');
@@ -101,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProductsForAutocomplete();
     loadGlobalProductsAndTemplates();
     renderItems();
+    setupWaitingInvoicesRealtimeListener();
 });
 
 // Ustaların siyahısını Firebase-dən çəkmək üçün
@@ -117,36 +112,40 @@ async function fetchUstalar() {
 }
 
 async function updateCustomerInputUI(selectedVal = '') {
-    const containerWrapper = customerInput ? customerInput.parentElement : null;
-    if (!containerWrapper) return;
+    const currentElement = document.getElementById('customer-input');
+    if (!currentElement) return;
 
     if (invoiceMode === 'usta') {
         if (allUstalarList.length === 0) {
             await fetchUstalar();
         }
-        let selectHTML = `<select id="customer-input" style="flex: 1; padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600;">
-            <option value="">-- Usta seçin --</option>`;
-        
-        allUstalarList.forEach(usta => {
-            const isSelected = usta === selectedVal ? 'selected' : '';
-            selectHTML += `<option value="${usta}" ${isSelected}>${usta}</option>`;
-        });
-        selectHTML += `</select>`;
 
-        const oldEl = document.getElementById('customer-input');
-        if (oldEl) {
-            oldEl.outerHTML = selectHTML;
-        }
+        // Select əvəzinə düymə şəkilli konteyner yaradırıq
+        const ustaDropdownHTML = `
+            <div id="customer-input" class="usta-custom-select-trigger" style="flex: 1; position: relative; padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; user-select: none;">
+                <span id="usta-selected-text" data-value="${selectedVal}">${selectedVal || '-- Usta seçin --'}</span>
+                <span style="font-size: 12px; color: #5bc0be;">▼</span>
+                <div id="main-usta-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 5px); left: 0; width: 100%; background: #0b132b; border: 1px solid #3a506b; border-radius: 8px; z-index: 99999; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-height: 220px; overflow-y: auto; box-sizing: border-box; padding: 6px;">
+                    <!-- Siyahı daxildə yaradılacaq -->
+                </div>
+            </div>
+        `;
+
+        currentElement.outerHTML = ustaDropdownHTML;
+        customerInput = document.getElementById('customer-input');
+        
+        // Klik hadisələrini qoşuruq
+        setupMainUstaDropdown();
+
     } else {
-        const currentElement = document.getElementById('customer-input');
-        if (currentElement && currentElement.tagName === 'SELECT') {
+        if (currentElement.tagName !== 'INPUT') {
             const inputHTML = `<input type="text" id="customer-input" value="${selectedVal}" placeholder="Müştəri adı və ya nömrə daxil edin..." style="flex: 1; padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600;">`;
             currentElement.outerHTML = inputHTML;
-        } else if (currentElement) {
+            customerInput = document.getElementById('customer-input');
+        } else {
             currentElement.value = selectedVal;
         }
     }
-    customerInput = document.getElementById('customer-input');
 }
 
 // Rejim dəyişimi düymələri (Müştəri / Usta)
@@ -221,7 +220,7 @@ function renderItems() {
             <td><input type="text" class="item-name" value="${item.name || ''}" placeholder="Məhsulun adı" ${item.isArchived ? 'disabled' : ''}></td>
             <td><input type="number" class="item-qty text-right" value="${item.qty !== undefined ? item.qty : ''}" min="0" ${item.isArchived ? 'disabled' : ''}></td>
             <td><input type="number" class="item-price text-right" value="${item.price !== undefined && item.price !== '' ? item.price : ''}" min="0" step="0.01" placeholder="" ${item.isArchived ? 'disabled' : ''}></td>
-            <td style="text-align: right; font-weight: 600; padding-top:14px; min-width:80px;" class="row-total-display">${rowTotal.toFixed(2)} AZN</td>
+            <td style="text-align: right; font-weight: 600; padding-top:14px; min-width:80px;" class="row-total-display">${rowTotal.toFixed(2)} ₼</td>
             <td style="text-align: center;">${actionButtonsHTML}</td>
         `;
 
@@ -274,13 +273,24 @@ function renderItems() {
                     option.addEventListener('mouseout', () => option.style.background = 'transparent');
 
                     option.addEventListener('click', () => {
+                        const isAlreadyAdded = invoiceItems.some((invItem, idx) => invItem.name.toLowerCase() === prod.name.toLowerCase() && idx !== index);
+                        
+                        if (isAlreadyAdded) {
+                            showNotification(`"${prod.name}" artıq bu qaiməyə əlavə edilib!`, "error");
+                            dropdown.remove();
+                            return;
+                        }
+
                         item.name = prod.name;
                         item.price = Number(prod.price);
                         nameInput.value = prod.name;
                         priceInput.value = prod.price;
 
-                        const newTotal = item.qty * item.price;
-                        rowTotalDisplay.textContent = newTotal.toFixed(2) + " AZN";
+                        const newTotal = (Number(item.qty) || 1) * item.price;
+                        if (!item.qty) item.qty = 1;
+                        qtyInput.value = item.qty;
+
+                        rowTotalDisplay.textContent = newTotal.toFixed(2) + " ₼";
                         fastCalculateTotal();
                         dropdown.remove();
                     });
@@ -303,7 +313,7 @@ function renderItems() {
                 let val = e.target.value === '' ? '' : parseFloat(e.target.value);
                 if (val < 0 || isNaN(val)) { val = 0; e.target.value = 0; }
                 item.qty = val;
-                rowTotalDisplay.textContent = ((Number(item.qty) || 0) * (Number(item.price) || 0)).toFixed(2) + " AZN";
+                rowTotalDisplay.textContent = ((Number(item.qty) || 0) * (Number(item.price) || 0)).toFixed(2) + " ₼";
                 fastCalculateTotal();
             });
         }
@@ -313,7 +323,7 @@ function renderItems() {
                 let val = e.target.value === '' ? '' : parseFloat(e.target.value);
                 if (val < 0.01 && val !== '') { val = 0.01; e.target.value = 0.01; }
                 item.price = val;
-                rowTotalDisplay.textContent = ((Number(item.qty) || 0) * (Number(item.price) || 0)).toFixed(2) + " AZN";
+                rowTotalDisplay.textContent = ((Number(item.qty) || 0) * (Number(item.price) || 0)).toFixed(2) + " ₼";
                 fastCalculateTotal();
             });
         }
@@ -329,28 +339,43 @@ function renderItems() {
             });
         }
 
-     if (invoiceMode === 'usta') {
+       if (invoiceMode === 'usta') {
             const archiveBtn = tr.querySelector('.archive-item-btn');
             if (archiveBtn) {
                 archiveBtn.addEventListener('click', async () => {
-                    const selectedUsta = customerInput ? customerInput.value.trim() : '';
+                    // Sətrin daxilindəki inputlardan cari dəyərləri birbaşa oxuyuruq
+                    const currentNameInput = tr.querySelector('.item-name');
+                    const currentQtyInput = tr.querySelector('.item-qty');
+                    const currentPriceInput = tr.querySelector('.item-price');
+
+                    item.name = currentNameInput ? currentNameInput.value : item.name;
+                    item.qty = currentQtyInput && currentQtyInput.value !== '' ? Number(currentQtyInput.value) : item.qty;
+                    item.price = currentPriceInput && currentPriceInput.value !== '' ? Number(currentPriceInput.value) : item.price;
+
+                    const ustaSelectedText = document.getElementById('usta-selected-text');
+                    let selectedUsta = '';
+                    if (ustaSelectedText) {
+                        selectedUsta = ustaSelectedText.dataset.value || ustaSelectedText.innerText.trim();
+                    }
 
                     if (!selectedUsta || selectedUsta === '' || selectedUsta.includes('-- Usta seçin --')) {
-                        return showNotification("Zəhmət olmasa əvvəlcə usta seçin!", "error");
+                        return showNotification("Zəhmət olmasa usta seçin!", "error");
                     }
                     if (!item.name || !item.name.trim()) {
-                        return showNotification("Zəhmət olmasa əvvəlcə məhsul adını daxil edin!", "error");
+                        return showNotification("Məhsul adı daxil edilməlidir!", "error");
+                    }
+                    if (item.qty === '' || item.qty === undefined || item.qty === null || Number(item.qty) <= 0 ||
+                        item.price === '' || item.price === undefined || item.price === null || Number(item.price) <= 0) {
+                        return showNotification("Miqdar və qiymət düzgün daxil edilməlidir!", "error");
                     }
 
                     try {
                         const rowTotal = (Number(item.qty) || 0) * (Number(item.price) || 0);
                         const currentDateStr = document.getElementById('flatpickr').value || '---';
 
-                        // 1. Dərhal sətri qaraldırıq
                         item.isArchived = true;
                         renderItems();
 
-                        // 2. Yoxlayırıq: Eyni usta və eyni tarixdə artıq arxiv qeydi varmı?
                         const historyRef = collection(db, "history_invoices");
                         const q = query(
                             historyRef, 
@@ -365,13 +390,11 @@ function renderItems() {
                         let existingData = null;
 
                         querySnapshot.forEach((docSnap) => {
-                            // Sadəcə sonuncu uyğun gələn sənədi götürürük
                             existingDocId = docSnap.id;
                             existingData = docSnap.data();
                         });
 
                         if (existingDocId && existingData) {
-                            // Əgər həmin günə aid qeyd varsa, məhsulu həmin massivə əlavə edirik
                             const updatedItems = [...(existingData.items || []), { name: item.name, qty: item.qty, price: item.price }];
                             const updatedTotal = updatedItems.reduce((sum, i) => sum + (Number(i.qty || 0) * Number(i.price || 0)), 0);
 
@@ -381,7 +404,6 @@ function renderItems() {
                                 updatedAt: serverTimestamp()
                             });
                         } else {
-                            // Əgər yoxdursa, yeni sətir (qeyd) yaradırıq
                             await addDoc(historyRef, {
                                 customerName: selectedUsta,
                                 invoiceDate: currentDateStr,
@@ -395,7 +417,6 @@ function renderItems() {
 
                         showNotification(`"${item.name}" uğurla Usta Arxivinə göndərildi`, "success");
 
-                        // 3. 2 saniyə gözləyib sonra cari sətirdən silirik
                         setTimeout(async () => {
                             const allArchived = invoiceItems.every(i => i.isArchived);
                             if (allArchived) {
@@ -416,7 +437,7 @@ function renderItems() {
                                 }
                                 renderItems();
                             }
-                        }, 2000);
+                        }, 1000);
 
                     } catch (err) {
                         console.error("Arxivləmə xətası:", err);
@@ -425,7 +446,6 @@ function renderItems() {
                 });
             }
         }
-
         itemsBody.appendChild(tr);
     });
 
@@ -658,19 +678,11 @@ function prepareOfficialPrintPage() {
 const btnDownload = document.getElementById('btn-download');
 if (btnDownload) {
     btnDownload.addEventListener('click', async () => {
-        const customerNameClean = customerInput.value.trim();
-        const activeItems = invoiceItems.filter(i => !i.isArchived);
-        const isFirstItemEmpty = activeItems.length === 1 && !activeItems[0].name.trim();
-
-        // ➔ BURAYA YOXLAMA ƏLAVƏ EDİRİK: Say və ya qiymət boş olmasın
-        const hasEmptyQtyOrPrice = activeItems.some(i => !i.isArchived && (i.qty === '' || i.qty === undefined || i.price === '' || i.price === undefined));
-
-        if (!customerNameClean || isFirstItemEmpty || hasEmptyQtyOrPrice) {
-            return showNotification("Müştəri adı, həmçinin hər bir məhsulun sayı və qiyməti doldurulmalıdır!", "error");
-        }
+        if (!validateInvoiceData()) return;
 
         prepareOfficialPrintPage();
         const element = document.getElementById('official-print-page');
+        const customerNameClean = customerInput.value.trim();
         const customerName = customerNameClean || 'Qaime';
 
         const opt = {
@@ -692,15 +704,7 @@ if (btnPrint) {
         e.preventDefault();
         e.stopImmediatePropagation();
         
-        const activeItems = invoiceItems.filter(i => !i.isArchived);
-        const isFirstItemEmpty = activeItems.length === 1 && !activeItems[0].name.trim();
-        
-        // ➔ BURAYA YOXLAMA ƏLAVƏ EDİRİK
-        const hasEmptyQtyOrPrice = activeItems.some(i => !i.isArchived && (i.qty === '' || i.qty === undefined || i.price === '' || i.price === undefined));
-
-        if (!customerInput.value.trim() || isFirstItemEmpty || hasEmptyQtyOrPrice) {
-            return showNotification("Müştəri adı, həmçinin hər bir məhsulun sayı və qiyməti doldurulmalıdır!", "error");
-        }
+        if (!validateInvoiceData()) return;
 
         prepareOfficialPrintPage();
         window.print();
@@ -710,17 +714,9 @@ if (btnPrint) {
 const btnWaiting = document.getElementById('btn-waiting');
 if (btnWaiting) {
     btnWaiting.addEventListener('click', async () => {
+        if (!validateInvoiceData()) return;
+
         const customerName = customerInput.value.trim();
-        const activeItems = invoiceItems.filter(i => !i.isArchived);
-        const isFirstItemEmpty = activeItems.length === 1 && !activeItems[0].name.trim();
-
-        // ➔ BURAYA YOXLAMA ƏLAVƏ EDİRİK
-        const hasEmptyQtyOrPrice = activeItems.some(i => !i.isArchived && (i.qty === '' || i.qty === undefined || i.price === '' || i.price === undefined));
-
-        if (!customerName || isFirstItemEmpty || hasEmptyQtyOrPrice) {
-            return showNotification("Müştəri adı, həmçinin hər bir məhsulun sayı və qiyməti doldurulmalıdır!", "error");
-        }
-
         const data = {
             customerName: customerName,
             invoiceDate: document.getElementById('flatpickr').value,
@@ -767,7 +763,19 @@ function resetForm() {
 
 async function addInvoiceToArchive(actionType) {
     try {
-        const customerNameClean = customerInput.value.trim() || 'Naməlum Müştəri';
+        let customerNameClean = 'Naməlum Müştəri';
+        const ustaSelectedText = document.getElementById('usta-selected-text');
+
+        if (invoiceMode === 'usta' && ustaSelectedText) {
+            customerNameClean = ustaSelectedText.dataset.value || ustaSelectedText.innerText.trim();
+        } else if (customerInput && customerInput.tagName === 'INPUT') {
+            customerNameClean = customerInput.value.trim();
+        }
+
+        if (!customerNameClean || customerNameClean.includes('-- Usta seçin --')) {
+            customerNameClean = 'Naməlum Müştəri';
+        }
+
         if (invoiceItems.length === 0) return;
 
         let grandTotal = invoiceItems.reduce((sum, item) => {
@@ -856,6 +864,8 @@ function renderWaitingList(invoices) {
 
         const div = document.createElement('div');
         div.className = 'waiting-item';
+        div.style.cursor = 'pointer';
+
         div.innerHTML = `
             <div class="waiting-item-left">
                 <strong style="color:#ffffff; font-size: 14px;">${data.customerName}</strong>
@@ -877,14 +887,13 @@ function renderWaitingList(invoices) {
             badge.classList.toggle('revealed');
         });
 
-        div.querySelector('.select-btn').addEventListener('click', async () => {
+        const handleSelectInvoice = async () => {
             currentActiveDocId = docId;
             if (data.invoiceDate) {
                 datePicker.setDate(data.invoiceDate);
             }
             invoiceItems = data.items.map(i => ({ ...i, isArchived: !!i.isArchived, selected: !!i.selected }));
             
-            // Rejimi qaiməyə uyğun tənzimləyirik
             invoiceMode = data.mode || 'musteri';
             
             if (invoiceMode === 'usta') {
@@ -895,7 +904,6 @@ function renderWaitingList(invoices) {
                 if (typeUstaBtn) typeUstaBtn.classList.remove('active');
             }
 
-            // Input/Select UI-ı çağırarkən birbaşa ustanın adını da ötürürük ki, seçilib düşsün
             await updateCustomerInputUI(data.customerName);
 
             renderItems();
@@ -904,7 +912,16 @@ function renderWaitingList(invoices) {
             if (waitingBtn) waitingBtn.textContent = 'Yenilə';
 
             waitingModal.style.display = 'none';
-            showNotification("Qaimə yükləndi", "success");
+            showNotification("Qaimə seçildi", "success");
+        };
+
+        div.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-delete-waiting') || 
+                e.target.closest('.waiting-item-confirm-box') || 
+                e.target.closest('.waiting-total-badge')) {
+                return;
+            }
+            handleSelectInvoice();
         });
 
         const btnDelete = div.querySelector('.btn-delete-waiting');
@@ -951,16 +968,7 @@ function renderWaitingList(invoices) {
 const btnCompleteInvoice = document.getElementById('btn-complete-invoice');
 if (btnCompleteInvoice) {
     btnCompleteInvoice.addEventListener('click', async () => {
-        const activeItems = invoiceItems.filter(i => !i.isArchived);
-        const hasEmptyItemName = activeItems.length === 0 || activeItems.some(i => !i.name || !i.name.trim());
-        const customerVal = customerInput ? customerInput.value.trim() : '';
-
-        // ➔ BURAYA YOXLAMA ƏLAVƏ EDİRİK
-        const hasEmptyQtyOrPrice = activeItems.some(i => !i.isArchived && (i.qty === '' || i.qty === undefined || i.price === '' || i.price === undefined));
-
-        if (!customerVal || hasEmptyItemName || hasEmptyQtyOrPrice) {
-            return showNotification("Müştəri adı, həmçinin hər bir məhsulun sayı və qiyməti doldurulmalıdır!", "error");
-        }
+        if (!validateInvoiceData()) return;
 
         try {
             await addInvoiceToArchive("completed");
@@ -989,24 +997,34 @@ if (waitingSearchInput) {
 flatpickr("#waiting-date-start", { dateFormat: "d.m.Y", locale: flatpickr.l10ns.az });
 flatpickr("#waiting-date-end", { dateFormat: "d.m.Y", defaultDate: "today", locale: flatpickr.l10ns.az });
 
-
-// Usta Ödəniş Modalı Məntiqi
+// ==========================================
+// USTA ÖDƏNİŞ MODALI MƏNTİQİ (XÜSUSİ ALT-MODAL İLƏ)
+// ==========================================
 const btnOpenUstaPayment = document.getElementById('btn-open-usta-payment');
 const ustaPaymentModal = document.getElementById('usta-payment-modal');
 const btnCloseUstaPayment = document.getElementById('btn-close-usta-payment');
-const ustaDebtorSelect = document.getElementById('usta-debtor-select');
 const ustaDebtItemsList = document.getElementById('usta-debt-items-list');
 const ustaGivenAmountInput = document.getElementById('usta-given-amount');
 const btnSaveUstaPayment = document.getElementById('btn-save-usta-payment');
 
+const btnSelectUstaTrigger = document.getElementById('btn-select-usta-trigger');
+const ustaSelectSubmodal = document.getElementById('usta-select-submodal');
+const btnCloseUstaSubmodal = document.getElementById('btn-close-usta-submodal');
+const ustaSubmodalSearch = document.getElementById('usta-submodal-search');
+const ustaSubmodalList = document.getElementById('usta-submodal-list');
+const selectedUstaLabel = document.getElementById('selected-usta-label');
+const ustaDebtorSelectVal = document.getElementById('usta-debtor-select-val');
+
 let selectedUstaDebtsData = [];
+let allLoadedDebtorUstalar = [];
 
 if (btnOpenUstaPayment && ustaPaymentModal) {
     btnOpenUstaPayment.addEventListener('click', async () => {
         ustaPaymentModal.style.display = 'flex';
-        ustaGivenAmountInput.value = '';
-        ustaDebtItemsList.innerHTML = '<div style="color: #ef4444; text-align: center; font-size: 13px; font-weight: 600; padding: 15px;">Zəhmət olmasa usta seçin</div>';
-        await loadDebtorUstalarToSelect();
+        if (ustaGivenAmountInput) ustaGivenAmountInput.value = '';
+        if (selectedUstaLabel) selectedUstaLabel.innerText = '-- Usta seçin --';
+        if (ustaDebtorSelectVal) ustaDebtorSelectVal.value = '';
+        if (ustaDebtItemsList) ustaDebtItemsList.innerHTML = '<div style="color: #ef4444; text-align: center; font-size: 13px; font-weight: 600; padding: 15px;">Zəhmət olmasa usta seçin</div>';
     });
 }
 
@@ -1020,146 +1038,213 @@ window.addEventListener('click', (e) => {
     if (e.target === ustaPaymentModal) {
         ustaPaymentModal.style.display = 'none';
     }
+    if (e.target === ustaSelectSubmodal) {
+        ustaSelectSubmodal.style.display = 'none';
+    }
 });
 
-async function loadDebtorUstalarToSelect() {
-    if (!ustaDebtorSelect) return;
+if (btnSelectUstaTrigger && ustaSelectSubmodal) {
+    btnSelectUstaTrigger.addEventListener('click', async () => {
+        ustaSelectSubmodal.style.display = 'flex';
+        if (ustaSubmodalSearch) ustaSubmodalSearch.value = '';
+        await loadDebtorUstalarToSubmodal();
+    });
+}
+
+if (btnCloseUstaSubmodal && ustaSelectSubmodal) {
+    btnCloseUstaSubmodal.addEventListener('click', () => {
+        ustaSelectSubmodal.style.display = 'none';
+    });
+}
+
+if (ustaSubmodalSearch) {
+    ustaSubmodalSearch.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        const filtered = allLoadedDebtorUstalar.filter(u => u.toLowerCase().includes(term));
+        renderUstaSubmodalList(filtered);
+    });
+}
+
+async function loadDebtorUstalarToSubmodal() {
+    if (!ustaSubmodalList) return;
     try {
-        ustaDebtorSelect.innerHTML = '<option value="">Yüklənir...</option>';
+        // ➔ "Yüklənir..." sözü əvəzinə halqa animasiyası daxil edildi
+        ustaSubmodalList.innerHTML = `
+            <div style="display: flex; justify-content: center; align-items: center; padding: 15px; width: 100%;">
+                <div class="sharp-ring-loader"></div>
+            </div>
+        `;
         const ustalarSet = new Set();
 
-        // 1. Əvvəlcə birbaşa "ustalar" kolleksiyasından qeydiyyatda olan ustaları çəkirik
         const ustalarSnap = await getDocs(collection(db, "ustalar"));
         ustalarSnap.forEach(docSnap => {
             const data = docSnap.data();
             if (data.name) ustalarSet.add(data.name.trim());
         });
 
-        // 2. Həmçinin arxivdə olan usta adlarını da əlavə edirik
         const historySnap = await getDocs(query(collection(db, "history_invoices"), where("mode", "==", "usta")));
         historySnap.forEach(docSnap => {
             const data = docSnap.data();
             if (data.customerName) ustalarSet.add(data.customerName.trim());
         });
 
-        // 3. Gözləmədə olan usta qaimələrini də əlavə edirik
         const waitingSnap = await getDocs(query(collection(db, "waiting_invoices"), where("mode", "==", "usta")));
         waitingSnap.forEach(docSnap => {
             const data = docSnap.data();
             if (data.customerName) ustalarSet.add(data.customerName.trim());
         });
 
-        ustaDebtorSelect.innerHTML = '<option value="">-- Usta seçin --</option>';
-        Array.from(ustalarSet).sort().forEach(usta => {
-            ustaDebtorSelect.innerHTML += `<option value="${usta}">${usta}</option>`;
-        });
+        allLoadedDebtorUstalar = Array.from(ustalarSet).sort();
+        renderUstaSubmodalList(allLoadedDebtorUstalar);
+
     } catch (e) {
         console.error("Usta siyahısını yükləmə xətası:", e);
-        ustaDebtorSelect.innerHTML = '<option value="">-- Xəta baş verdi --</option>';
+        ustaSubmodalList.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 10px;">Xəta baş verdi</div>';
     }
 }
 
-if (ustaDebtorSelect) {
-    ustaDebtorSelect.addEventListener('change', async (e) => {
-        const selectedUsta = e.target.value;
-        if (!selectedUsta) {
-            ustaDebtItemsList.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 15px;">Əvvəlcə yuxarıdan usta seçin</div>';
-            const totalView = document.getElementById('selected-items-total');
-            if (totalView) totalView.innerText = '0.00';
-            return;
-        }
+function renderUstaSubmodalList(ustalar) {
+    if (!ustaSubmodalList) return;
+    ustaSubmodalList.innerHTML = '';
 
+    if (ustalar.length === 0) {
+        ustaSubmodalList.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 10px;">Usta tapılmadı</div>';
+        return;
+    }
+
+    ustalar.forEach(usta => {
+        const itemDiv = document.createElement('div');
+        itemDiv.style.cssText = 'padding: 10px 12px; background: #0b132b; border: 1px solid #233554; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 600; transition: all 0.2s;';
+        itemDiv.innerText = usta;
+
+        itemDiv.addEventListener('mouseover', () => itemDiv.style.borderColor = '#5bc0be');
+        itemDiv.addEventListener('mouseout', () => itemDiv.style.borderColor = '#233554');
+
+        itemDiv.addEventListener('click', async () => {
+            if (selectedUstaLabel) selectedUstaLabel.innerText = usta;
+            if (ustaDebtorSelectVal) ustaDebtorSelectVal.value = usta;
+            if (ustaSelectSubmodal) ustaSelectSubmodal.style.display = 'none';
+
+            await fetchUstaDebtsData(usta);
+        });
+
+        ustaSubmodalList.appendChild(itemDiv);
+    });
+}
+
+async function fetchUstaDebtsData(selectedUsta) {
+    const totalDebtView = document.getElementById('usta-total-debt-view');
+
+    if (!selectedUsta) {
+        if (ustaDebtItemsList) ustaDebtItemsList.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 15px;">Əvvəlcə yuxarıdan usta seçin</div>';
+        const totalView = document.getElementById('selected-items-total');
+        if (totalView) totalView.innerText = '0.00';
+        if (totalDebtView) totalDebtView.innerText = '0.00 AZN';
+        return;
+    }
+
+    if (ustaDebtItemsList) {
         ustaDebtItemsList.innerHTML = `
             <div style="text-align: center; padding: 15px;">
                 <div class="sharp-ring-loader" style="margin: 0 auto;"></div>
             </div>
         `;
-        
-        try {
-            selectedUstaDebtsData = [];
+    }
+    
+    try {
+        selectedUstaDebtsData = [];
 
-            // 1. Gözləmədə olan qaimələrdən malları çəkirik
-            const waitingQuery = query(collection(db, "waiting_invoices"), where("mode", "==", "usta"), where("customerName", "==", selectedUsta));
-            const waitingSnap = await getDocs(waitingQuery);
-            waitingSnap.forEach(docSnap => {
-                selectedUstaDebtsData.push({ id: docSnap.id, collectionType: "waiting_invoices", ...docSnap.data() });
-            });
+        const waitingQuery = query(collection(db, "waiting_invoices"), where("mode", "==", "usta"), where("customerName", "==", selectedUsta));
+        const waitingSnap = await getDocs(waitingQuery);
+        waitingSnap.forEach(docSnap => {
+            selectedUstaDebtsData.push({ id: docSnap.id, collectionType: "waiting_invoices", ...docSnap.data() });
+        });
 
-            // 2. Arxivdə olan qaimələrdən malları çəkirik
-            const historyQuery = query(collection(db, "history_invoices"), where("mode", "==", "usta"), where("customerName", "==", selectedUsta));
-            const historySnap = await getDocs(historyQuery);
-            historySnap.forEach(docSnap => {
-                selectedUstaDebtsData.push({ id: docSnap.id, collectionType: "history_invoices", ...docSnap.data()});
-            });
+        const historyQuery = query(collection(db, "history_invoices"), where("mode", "==", "usta"), where("customerName", "==", selectedUsta));
+        const historySnap = await getDocs(historyQuery);
+        historySnap.forEach(docSnap => {
+            selectedUstaDebtsData.push({ id: docSnap.id, collectionType: "history_invoices", ...docSnap.data()});
+        });
 
-            ustaDebtItemsList.innerHTML = '';
-            if (selectedUstaDebtsData.length === 0) {
-                ustaDebtItemsList.innerHTML = '<div style="color: #00ff0d; text-align: center; font-size: 15px; padding: 15px;">Bu ustanın adında heç bir məhsul yoxdur.</div>';
-                const totalView = document.getElementById('selected-items-total');
-                if (totalView) totalView.innerText = '0.00';
-                return;
-            }
+        if (ustaDebtItemsList) ustaDebtItemsList.innerHTML = '';
 
-            const updateSelectedTotal = () => {
-                let selectedSum = 0;
-                const checkedBoxes = ustaDebtItemsList.querySelectorAll('.payment-item-checkbox:checked');
-                
-                checkedBoxes.forEach(chk => {
-                    selectedSum += Number(chk.dataset.price || 0);
-                });
-
-                const totalView = document.getElementById('selected-items-total');
-                if (totalView) {
-                    totalView.innerText = selectedSum.toFixed(2);
-                }
-
-                // Qaytarılacaq məbləğ hesablamasını işə salırıq
-                updateChangeCalculation();
-            };
-
-            selectedUstaDebtsData.forEach((inv) => {
-                if (inv.items && Array.isArray(inv.items)) {
-                    inv.items.forEach((item, itemIndex) => {
-                        // Əgər məhsul artıq arxivləşibsə (isArchived true-dursa), göstərmirik
-                        if (item.isArchived) return;
-
-                        const itemTotalPrice = (Number(item.qty || 0) * Number(item.price || 0));
-
-                        const rowDiv = document.createElement('div');
-                        rowDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: #1c2541; padding: 8px 10px; border-radius: 6px; border: 1px solid #3a506b; font-size: 13px;';
-                        rowDiv.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" class="payment-item-checkbox" data-inv-id="${inv.id}" data-col="${inv.collectionType}" data-item-idx="${itemIndex}" data-price="${itemTotalPrice}" style="width: 16px; height: 16px; cursor: pointer;">
-                                <span style="color: #fff; font-weight: 600;">${item.name} (${item.qty} əd.) - <span style="font-size: 11px; color: #94a3b8;">${inv.invoiceDate || ''}</span></span>
-                            </div>
-                            <span style="color: #5bc0be; font-weight: bold;">${itemTotalPrice.toFixed(2)} AZN</span>
-                        `;
-
-                        // Checkbox işarələndikdə cəmi yenilə
-                        const chkBox = rowDiv.querySelector('.payment-item-checkbox');
-                        chkBox.addEventListener('change', updateSelectedTotal);
-
-                        ustaDebtItemsList.appendChild(rowDiv);
-                    });
-                }
-            });
-
-            if (ustaDebtItemsList.children.length === 0) {
-                ustaDebtItemsList.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 15px;">Bu ustanın ödənilməmiş aktiv məhsulu yoxdur.</div>';
-            }
-
-            // Hər dəfə usta dəyişəndə cəmi sıfırlayırıq
+        if (selectedUstaDebtsData.length === 0) {
+            if (ustaDebtItemsList) ustaDebtItemsList.innerHTML = '<div style="color: #00ff0d; text-align: center; font-size: 15px; padding: 15px;">Bu ustanın borcu yoxdur.</div>';
             const totalView = document.getElementById('selected-items-total');
             if (totalView) totalView.innerText = '0.00';
-
-        } catch (err) {
-            console.error("Xəta:", err);
-            ustaDebtItemsList.innerHTML = '<div style="color: #ef4444; text-align: center; font-size: 12px; padding: 15px;">Məlumatı çəkmək mümkün olmadı.</div>';
+            if (totalDebtView) totalDebtView.innerText = '0.00 AZN';
+            return;
         }
-    });
+
+        let grandTotalDebt = 0;
+        selectedUstaDebtsData.forEach((inv) => {
+            if (inv.items && Array.isArray(inv.items)) {
+                inv.items.forEach((item) => {
+                    if (!item.isArchived) {
+                        grandTotalDebt += (Number(item.qty || 0) * Number(item.price || 0));
+                    }
+                });
+            }
+        });
+
+        if (totalDebtView) {
+            totalDebtView.innerText = grandTotalDebt.toFixed(2) + " AZN";
+        }
+
+        const updateSelectedTotal = () => {
+            let selectedSum = 0;
+            const checkedBoxes = ustaDebtItemsList.querySelectorAll('.payment-item-checkbox:checked');
+            
+            checkedBoxes.forEach(chk => {
+                selectedSum += Number(chk.dataset.price || 0);
+            });
+
+            const totalView = document.getElementById('selected-items-total');
+            if (totalView) {
+                totalView.innerText = selectedSum.toFixed(2);
+            }
+
+            updateChangeCalculation();
+        };
+
+        selectedUstaDebtsData.forEach((inv) => {
+            if (inv.items && Array.isArray(inv.items)) {
+                inv.items.forEach((item, itemIndex) => {
+                    if (item.isArchived) return;
+
+                    const itemTotalPrice = (Number(item.qty || 0) * Number(item.price || 0));
+
+                    const rowDiv = document.createElement('div');
+                    rowDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: #1c2541; padding: 8px 10px; border-radius: 6px; border: 1px solid #3a506b; font-size: 13px;';
+                    rowDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="payment-item-checkbox" data-inv-id="${inv.id}" data-col="${inv.collectionType}" data-item-idx="${itemIndex}" data-price="${itemTotalPrice}" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="color: #fff; font-weight: 600;">${item.name} (${item.qty} əd.) - <span style="font-size: 11px; color: #94a3b8;">${inv.invoiceDate || ''}</span></span>
+                        </div>
+                        <span style="color: #5bc0be; font-weight: bold;">${itemTotalPrice.toFixed(2)} AZN</span>
+                    `;
+
+                    const chkBox = rowDiv.querySelector('.payment-item-checkbox');
+                    chkBox.addEventListener('change', updateSelectedTotal);
+
+                    if (ustaDebtItemsList) ustaDebtItemsList.appendChild(rowDiv);
+                });
+            }
+        });
+
+        if (ustaDebtItemsList && ustaDebtItemsList.children.length === 0) {
+            ustaDebtItemsList.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 15px;">Bu ustanın ödənilməmiş aktiv məhsulu yoxdur.</div>';
+        }
+
+        const totalView = document.getElementById('selected-items-total');
+        if (totalView) totalView.innerText = '0.00';
+
+    } catch (err) {
+        console.error("Xəta:", err);
+        if (ustaDebtItemsList) ustaDebtItemsList.innerHTML = '<div style="color: #ef4444; text-align: center; font-size: 12px; padding: 15px;">Məlumatı çəkmək mümkün olmadı.</div>';
+    }
 }
 
-// Gətirilən ödəniş dəyişdikdə və ya məhsul seçildikdə fərqi (qaytarılacaq məbləği) hesablayan funksiya
 function updateChangeCalculation() {
     const totalEl = document.getElementById('selected-items-total');
     const givenInput = document.getElementById('usta-given-amount');
@@ -1180,15 +1265,13 @@ function updateChangeCalculation() {
     }
 }
 
-// Inputa dəyər yazdıqda avtomatik işləməsi üçün
 if (ustaGivenAmountInput) {
     ustaGivenAmountInput.addEventListener('input', updateChangeCalculation);
 }
 
-// Usta Ödənişini Təsdiqləmə və Seçilən Malların Bazadan Silinməsi Məntiqi
 if (btnSaveUstaPayment) {
     btnSaveUstaPayment.addEventListener('click', async () => {
-        const selectedUsta = ustaDebtorSelect ? ustaDebtorSelect.value : '';
+        const selectedUsta = ustaDebtorSelectVal ? ustaDebtorSelectVal.value : '';
         const givenAmount = Number(ustaGivenAmountInput ? ustaGivenAmountInput.value : 0);
 
         if (!selectedUsta) {
@@ -1196,7 +1279,7 @@ if (btnSaveUstaPayment) {
             return;
         }
 
-        const checkboxes = ustaDebtItemsList.querySelectorAll('.payment-item-checkbox:checked');
+        const checkboxes = ustaDebtItemsList ? ustaDebtItemsList.querySelectorAll('.payment-item-checkbox:checked') : [];
         if (checkboxes.length === 0) {
             showNotification("Zəhmət olmasa ödənilən məhsulları seçin!", "error");
             return;
@@ -1207,7 +1290,7 @@ if (btnSaveUstaPayment) {
 
             checkboxes.forEach(chk => {
                 const docId = chk.dataset.invId;
-                const colType = chk.dataset.col; // waiting_invoices və ya history_invoices
+                const colType = chk.dataset.col;
                 const itemIdx = Number(chk.dataset.itemIdx);
 
                 if (!updatesMap[docId]) {
@@ -1219,7 +1302,6 @@ if (btnSaveUstaPayment) {
                 updatesMap[docId].indicesToRemove.push(itemIdx);
             });
 
-            // Firebase sənədlərini yeniləyirik və ya silirik
             for (const docId in updatesMap) {
                 const info = updatesMap[docId];
                 const targetInv = selectedUstaDebtsData.find(d => d.id === docId);
@@ -1246,7 +1328,6 @@ if (btnSaveUstaPayment) {
                 }
             }
 
-            // Ödəniş qeydini arxivə əlavə edirik
             await addDoc(collection(db, "history_invoices"), {
                 customerName: selectedUsta,
                 invoiceDate: document.getElementById('flatpickr').value || '---',
@@ -1260,10 +1341,10 @@ if (btnSaveUstaPayment) {
             showNotification("Usta ödənişi təsdiqləndi və seçilən mallar silindi!", "success");
             if (ustaPaymentModal) ustaPaymentModal.style.display = 'none';
             
-            // Modaldakı məlumatları təmizləyirik
-            ustaDebtorSelect.value = '';
-            ustaDebtItemsList.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 15px; padding: 15px;">Əvvəlcə yuxarıdan usta seçin</div>';
-            ustaGivenAmountInput.value = '';
+            if (selectedUstaLabel) selectedUstaLabel.innerText = '-- Usta seçin --';
+            if (ustaDebtorSelectVal) ustaDebtorSelectVal.value = '';
+            if (ustaDebtItemsList) ustaDebtItemsList.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 15px; padding: 15px;">Əvvəlcə yuxarıdan usta seçin</div>';
+            if (ustaGivenAmountInput) ustaGivenAmountInput.value = '';
             
             const totalView = document.getElementById('selected-items-total');
             if (totalView) totalView.innerText = '0.00';
@@ -1278,3 +1359,141 @@ if (btnSaveUstaPayment) {
     });
 }
 
+// ==========================================
+// REAL VAXTDA GÖZLƏYƏN QAİMƏLƏR
+// ==========================================
+let unsubscribeWaitingListener = null;
+
+function setupWaitingInvoicesRealtimeListener() {
+    if (unsubscribeWaitingListener) {
+        unsubscribeWaitingListener();
+    }
+
+    const q = query(collection(db, "waiting_invoices"), where("status", "==", "waiting"));
+    
+    unsubscribeWaitingListener = onSnapshot(q, (snapshot) => {
+        allWaitingInvoices = [];
+        snapshot.forEach((documentSnapshot) => {
+            allWaitingInvoices.push({
+                id: documentSnapshot.id,
+                ...documentSnapshot.data()
+            });
+        });
+
+        renderWaitingList(allWaitingInvoices);
+    }, (error) => {
+        console.error("Realtime dinləmə xətası:", error);
+    });
+}
+
+function validateInvoiceData() {
+    let customerVal = '';
+    const ustaSelectedText = document.getElementById('usta-selected-text');
+    
+    if (invoiceMode === 'usta' && ustaSelectedText) {
+        customerVal = ustaSelectedText.dataset.value || ustaSelectedText.innerText.trim();
+    } else if (customerInput) {
+        customerVal = customerInput.value.trim();
+    }
+
+    if (!customerVal || customerVal.includes('-- Usta seçin --')) {
+        const msg = invoiceMode === 'usta' ? 'Zəhmət olmasa usta seçin!' : 'Müştəri adı daxil edilməlidir!';
+        showNotification(msg, "error");
+        return false;
+    }
+
+    const addedProductNames = new Set();
+    for (let i = 0; i < invoiceItems.length; i++) {
+        const item = invoiceItems[i];
+        if (item.isArchived) continue; // Arxivlənənləri ötürürük
+
+        const productNameLower = item.name ? item.name.trim().toLowerCase() : '';
+
+        if (productNameLower && addedProductNames.has(productNameLower)) {
+            showNotification(`"${item.name}" məhsulu təkrar əlavə olunub. Hər məhsul yalnız bir dəfə ola bilər!`, "error");
+            return false;
+        }
+        if (productNameLower) {
+            addedProductNames.add(productNameLower);
+        }
+    }
+
+    for (let i = 0; i < invoiceItems.length; i++) {
+        const item = invoiceItems[i];
+        if (item.isArchived) continue;
+
+        const rowNum = i + 1;
+
+        if (!item.name || !item.name.trim()) {
+            showNotification(`${rowNum}-ci sətirdə məhsulun adı daxil edilməlidir!`, "error");
+            return false;
+        }
+        if (item.qty === '' || item.qty === undefined || item.qty === null || Number(item.qty) <= 0 || isNaN(Number(item.qty))) {
+            showNotification(`"${item.name}" məhsulunun miqdarı daxil edilməlidir!`, "error");
+            return false;
+        }
+        if (item.price === '' || item.price === undefined || item.price === null || isNaN(Number(item.price))) {
+            showNotification(`"${item.name}" məhsulunun qiyməti daxil edilməlidir!`, "error");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function setupMainUstaDropdown() {
+    const trigger = document.getElementById('customer-input');
+    const menu = document.getElementById('main-usta-dropdown-menu');
+    const selectedText = document.getElementById('usta-selected-text');
+
+    if (!trigger || !menu) return;
+
+    // Siyahını menyuya doldururuq
+    menu.innerHTML = '';
+    
+    // İlkin boş seçim
+    const defaultOpt = document.createElement('div');
+    defaultOpt.innerText = '-- Usta seçin --';
+    defaultOpt.style.cssText = 'padding: 10px 12px; cursor: pointer; font-size: 14px; color: #94a3b8; border-bottom: 1px solid #1f2d5a; border-radius: 4px;';
+    defaultOpt.addEventListener('mouseover', () => defaultOpt.style.background = '#1a233a');
+    defaultOpt.addEventListener('mouseout', () => defaultOpt.style.background = 'transparent');
+    defaultOpt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedText.innerText = '-- Usta seçin --';
+        selectedText.dataset.value = '';
+        menu.style.display = 'none';
+    });
+    menu.appendChild(defaultOpt);
+
+    allUstalarList.forEach(usta => {
+        const item = document.createElement('div');
+        item.innerText = usta;
+        item.style.cssText = 'padding: 10px 12px; cursor: pointer; font-size: 14px; color: #ffffff; border-radius: 4px; font-weight: 600; margin-top: 2px;';
+        
+        item.addEventListener('mouseover', () => item.style.background = '#1f2d5a');
+        item.addEventListener('mouseout', () => item.style.background = 'transparent');
+        
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedText.innerText = usta;
+            selectedText.dataset.value = usta;
+            menu.style.display = 'none';
+        });
+
+        menu.appendChild(item);
+    });
+
+    // Açılıb-bağlanma məntiqi
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = menu.style.display === 'block';
+        menu.style.display = isVisible ? 'none' : 'block';
+    });
+
+    // Kənara vuranda bağlanması
+    document.addEventListener('click', (e) => {
+        if (!trigger.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+}

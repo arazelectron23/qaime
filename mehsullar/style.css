@@ -92,3 +92,47 @@ input {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Böyüdülmüş və tam kvadrat zərif checkbox */
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    background-color: #0b0f19;
+    border: 2px solid #374151;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    vertical-align: middle;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.custom-checkbox:hover {
+    border-color: #5bc0be;
+}
+
+.custom-checkbox:checked {
+    background-color: #0073c0;
+    border-color: #5bc0be;
+    box-shadow: 0 0 8px rgba(91, 192, 190, 0.5);
+}
+
+.custom-checkbox:checked::after {
+    content: "✔";
+    font-size: 13px; /* Quş işarəsini də ölçüyə uyğun böyüdürük */
+    color: #ffffff;
+    font-weight: bold;
+    display: block;
+    line-height: 1;
+}

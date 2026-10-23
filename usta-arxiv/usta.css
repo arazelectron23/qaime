@@ -590,3 +590,16 @@ span.flatpickr-weekday {
 .flatpickr-day.nextMonthDay {
     color: #334155 !important;
 }
+
+/* Usta sətrlərinin yer dəyişməsi üçün səlis keçid effekti */
+.usta-modal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1c2541;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #3a506b;
+    margin-bottom: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

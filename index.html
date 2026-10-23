@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=1200, initial-scale=0.3, shrink-to-fit=no">
     <link rel="manifest" href="manifest.json">
     <title>Qaimə</title>
-    <link rel="stylesheet" href="style.css?v=6.2">
+    <link rel="stylesheet" href="style.css?v=6.4">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link rel="icon" type="image/png" href="./favicon.png?v=1">
@@ -21,46 +21,43 @@
 
     <div class="app-container no-print">
         <div class="control-panel">
-    <!-- Müştəri üçün sərbəst input -->
-    <input type="text" id="customer-input" placeholder="Müştəri adı və ya nömrə daxil edin...">
-    
-    <!-- Usta üçün seçimli select (Əvvəlcə gizlidir) -->
-    <select id="customer-select" style="display: none; padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600; flex: 1;">
-        <option value="">-- Usta seçin --</option>
-    </select>
+            <!-- Müştəri üçün sərbəst input -->
+            <input type="text" id="customer-input" placeholder="Müştəri adı və ya nömrə daxil edin...">
+            
+            <!-- Usta üçün seçimli select (Əvvəlcə gizlidir) -->
+            <select id="customer-select" style="display: none; padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600; flex: 1;">
+                <option value="">-- Usta seçin --</option>
+            </select>
 
-    <input type="text" id="flatpickr" placeholder="Tarix seçin..." style="padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600;">
-    
-    <div class="actions">
-    <button class="btnNewInvoice" id="btn-new-invoice">Yeni+</button>
-    <button id="btn-complete-invoice" class="btn-tamamla">Tamamla</button>
-    <button id="btn-open-usta-payment" class="btn btn-tamamla" style="background-color: #8b5cf6; border-color: #8b5cf6;">Usta Ödənişi</button>
-    <button class="btn btn-blue" id="btn-print">Çap Et</button>
-    <button class="btn btn-yellow" id="btn-waiting">Gözləməyə Al</button>
-    <button class="btn btn-green" id="btn-download">YÜKLƏ</button>
-</div>
-</div>
+            <input type="text" id="flatpickr" placeholder="Tarix seçin..." style="padding: 12px 16px; border: 1px solid #3a506b; border-radius: 8px; font-size: 15px; background-color: #0b132b; color: #ffffff; outline: none; font-weight: 600;">
+            
+            <div class="actions">
+                <button class="btnNewInvoice" id="btn-new-invoice">Yeni+</button>
+                <button id="btn-open-usta-payment" class="btn btn-tamamla" style="background-color: #8b5cf6; border-color: #8b5cf6;">Usta Ödənişi</button>
+                <button id="btn-complete-invoice" class="btn-tamamla">Tamamla</button>
+                <button class="btn btn-blue" id="btn-print">Çap Et</button>
+                <button class="btn btn-yellow" id="btn-waiting">Gözləməyə Al</button>
+                <button class="btn btn-green" id="btn-download">YÜKLƏ</button>
+            </div>
+        </div>
 
-
-
-       <div class="main-content">
+        <div class="main-content">
             <div class="invoice-box">
-                
-<div class="template-select-box" style="background-color: #101935; border: 1px solid #1f2d5a; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
-    <div style="color: #8da4ef; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-        <span>📋</span> Hazır Şablon Seçin:
-    </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <button type="button" id="btn-open-template-modal" class="btn btn-blue" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: #0b132b; border: 1px solid #233554; color: #fff; padding: 12px 15px; border-radius: 8px; font-weight: normal;">
-            <span id="selected-template-name" style="color: #94a3b8;">-- Şablon seçilməyib --</span>
-        </button>
-    </div>
-</div>
+                <div class="template-select-box" style="background-color: #101935; border: 1px solid #1f2d5a; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                    <div style="color: #8da4ef; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                        <span>📋</span> Hazır Şablon Seçin:
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button type="button" id="btn-open-template-modal" class="btn btn-blue" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: #0b132b; border: 1px solid #233554; color: #fff; padding: 12px 15px; border-radius: 8px; font-weight: normal;">
+                            <span id="selected-template-name" style="color: #94a3b8;">-- Şablon seçilməyib --</span>
+                        </button>
+                    </div>
+                </div>
 
-<div class="invoice-type-selector">
-    <button type="button" id="typeMusteriBtn" class="type-btn active">👤 Müştəri</button>
-    <button type="button" id="typeUstaBtn" class="type-btn">🛠️ Usta</button>
-</div>
+                <div class="invoice-type-selector">
+                    <button type="button" id="typeMusteriBtn" class="type-btn active">👤 Müştəri</button>
+                    <button type="button" id="typeUstaBtn" class="type-btn">🛠️ Usta</button>
+                </div>
 
                 <div class="invoice-table-wrapper">
                     <table class="invoice-table">
@@ -100,81 +97,103 @@
         </div>
     </div>
 
-<div id="waiting-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="width: 700px; max-width: 95%;">
-        <div class="modal-header-box">
-            <h3>Gözləyən Qaimələr</h3>
+    <!-- Gözləyən Qaimələr Modalı -->
+    <div id="waiting-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="width: 700px; max-width: 95%;">
+            <div class="modal-header-box">
+                <h3>Gözləyən Qaimələr</h3>
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                <input type="text" id="waiting-search-input" placeholder="Axtar..." class="date-filter-input" style="flex: 2;">
+                <input type="text" id="waiting-date-start" placeholder="Başlanğıc tarix..." class="date-filter-input" style="flex: 1;">
+                <input type="text" id="waiting-date-end" placeholder="Bitiş tarix..." class="date-filter-input" style="flex: 1;">
+            </div>
+            <div class="modal-list-box" id="waiting-modal-list"></div>
         </div>
-        <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-            <input type="text" id="waiting-search-input" placeholder="Axtar..." class="date-filter-input" style="flex: 2;">
-            <input type="text" id="waiting-date-start" placeholder="Başlanğıc tarix..." class="date-filter-input" style="flex: 1;">
-            <input type="text" id="waiting-date-end" placeholder="Bitiş tarix..." class="date-filter-input" style="flex: 1;">
-        </div>
-        <div class="modal-list-box" id="waiting-modal-list"></div>
     </div>
-</div>
 
     <div id="hidden-pdf-container" class="hidden-pdf-wrapper">
         <div id="official-print-page" class="a4-official-page"></div>
     </div>
 
-<div id="template-select-modal" class="modal modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 500px;">
-        <span id="custom-modal-close" style="float: right; cursor: pointer; font-size: 24px; color: #fff;">&times;</span>
-        <h3 style="color: #5bc0be; margin-bottom: 15px;">Hazır Şablonu Seçin</h3>
-        <input type="text" id="template-search-input" placeholder="Şablon axtar..." style="width: 100%; padding: 10px; margin-bottom: 12px; background: #0b132b; border: 1px solid #233554; color: #fff; border-radius: 6px; outline: none;">
-        <div id="template-list-container" class="template-list">
-            <div style="display: flex; justify-content: center; align-items: center; padding: 20px; width: 100%;">
-                <div class="sharp-ring-loader"></div>
+    <!-- Şablon Seçim Modalı -->
+    <div id="template-select-modal" class="modal modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <span id="custom-modal-close" style="float: right; cursor: pointer; font-size: 24px; color: #fff;">&times;</span>
+            <h3 style="color: #5bc0be; margin-bottom: 15px;">Hazır Şablonu Seçin</h3>
+            <input type="text" id="template-search-input" placeholder="Şablon axtar..." style="width: 100%; padding: 10px; margin-bottom: 12px; background: #0b132b; border: 1px solid #233554; color: #fff; border-radius: 6px; outline: none;">
+            <div id="template-list-container" class="template-list">
+                <div style="display: flex; justify-content: center; align-items: center; padding: 20px; width: 100%;">
+                    <div class="sharp-ring-loader"></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Usta Ödəniş və Mal Bölgüsü Modalı -->
-<div id="usta-payment-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="width: 600px; max-width: 95%;">
-        <div class="modal-header-box">
-            <h3 style="color: #5bc0be; margin: 0; font-size: 16px;">🛠️ Usta Ödəniş və Mal Bölgüsü</h3>
-            <span id="btn-close-usta-payment" class="modal-close-btn" style="cursor: pointer; font-size: 20px; color: #ff6b6b;">&times;</span>
+    <!-- Usta Ödəniş və Mal Bölgüsü Modalı -->
+    <div id="usta-payment-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="width: 600px; max-width: 95%;">
+            <div class="modal-header-box">
+                <h3 style="color: #5bc0be; margin: 0; font-size: 16px;">🛠️ Usta Ödəniş və Mal Bölgüsü</h3>
+                <span id="btn-close-usta-payment" class="modal-close-btn" style="cursor: pointer; font-size: 20px; color: #ff6b6b;">&times;</span>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: #94a3b8; display: block; margin-bottom: 5px;">Borclu Ustalar:</label>
+                <!-- Select əvəzinə yaradılan düymə trigger-i -->
+                <div id="btn-select-usta-trigger" style="padding: 12px 16px; background: #0b132b; border: 1px solid #3a506b; border-radius: 8px; color: #ffffff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
+                    <span id="selected-usta-label">-- Usta seçin --</span>
+                    <span style="font-size: 12px; color: #5bc0be;">▼</span>
+                </div>
+                <input type="hidden" id="usta-debtor-select-val" value="">
+            </div>
+
+            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 8px; font-weight: bold;">Ustanın Götürdüyü Mallar:</div>
+            <div id="usta-debt-items-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; background: #0b132b; padding: 10px; border-radius: 8px; border: 1px solid #3a506b;">
+                <div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 15px;">Əvvəlcə yuxarıdan usta seçin</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #3a506b; padding-top: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 115, 192, 0.15); border: 1px solid #0073c0; padding: 6px 10px; border-radius: 6px; font-size: 13px;">
+                    <span style="color: #5bc0be; font-weight: bold;">Ustanın Ümumi Borcu:</span>
+                    <strong id="usta-total-debt-view" style="color: #5bc0be; font-size: 16px;">0.00 AZN</strong>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #94a3b8;">
+                    <span>Seçilən Malların Cəmi: <strong id="selected-items-total" style="color: #fff; font-size: 20px;">0.00</strong> AZN</span>
+                </div>
+                
+                <div id="change-amount-container" style="display: none; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 6px 10px; border-radius: 6px; font-size: 13px;">
+                    <span style="color: #34d399; font-weight: bold;">Qaytarılacaq Məbləğ (Artıq pul):</span>
+                    <strong id="change-amount-view" style="color: #34d399; font-size: 15px;">0.00 AZN</strong>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 14px; color: #fff; font-weight: bold;">
+                        Gətirilən Ödəniş: <input type="number" id="usta-given-amount" placeholder="0.00" style="width: 100px; padding: 6px; background: #0b132b; border: 1px solid #3a506b; border-radius: 6px; color: #5bc0be; font-weight: bold; text-align: right; outline: none;" min="0"> AZN
+                    </div>
+                    <button id="btn-save-usta-payment" class="btn btn-green" style="padding: 9px 18px; font-size: 13px;">Ödənişi Təsdiq Et</button>
+                </div>
+            </div>
         </div>
-        
-        <div style="margin-bottom: 12px;">
-            <label style="font-size: 13px; color: #94a3b8; display: block; margin-bottom: 5px;">Borclu Ustalar:</label>
-            <select id="usta-debtor-select" style="width: 100%; padding: 10px; background: #0b132b; border: 1px solid #3a506b; border-radius: 6px; color: #fff; font-weight: 600; outline: none;">
-                <option value="">-- Usta seçin --</option>
-            </select>
+    </div>
+
+    <!-- Usta Seçimi Üçün Alt-Modal -->
+    <div id="usta-select-submodal" class="modal-overlay" style="display: none; z-index: 10005;">
+        <div class="modal-content" style="width: 400px; max-width: 90%; background: #111d4a; padding: 20px; border-radius: 12px; border: 1px solid #233554;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #ffffff; font-size: 16px;">Usta Seçin</h4>
+                <span id="btn-close-usta-submodal" style="color: #ef4444; font-size: 20px; cursor: pointer; font-weight: bold;">&times;</span>
+            </div>
+            <input type="text" id="usta-submodal-search" placeholder="Usta adı axtar..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #3a506b; background: #0b132b; color: #fff; margin-bottom: 12px; box-sizing: border-box; outline: none;">
+            <div id="usta-submodal-list" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                <!-- Ustaların siyahısı JS ilə yüklənəcək -->
+            </div>
         </div>
-
-        <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 8px; font-weight: bold;">Ustanın Götürdüyü Mallar:</div>
-        <div id="usta-debt-items-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; background: #0b132b; padding: 10px; border-radius: 8px; border: 1px solid #3a506b;">
-            <div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 15px;">Əvvəlcə yuxarıdan usta seçin</div>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #3a506b; padding-top: 12px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #94a3b8;">
-        <span>Seçilən Malların Cəmi: <strong id="selected-items-total" style="color: #fff; font-size: 20px;">0.00</strong> AZN</span>
     </div>
-    
-    <!-- Qaytarılacaq məbləğ xanası (ilkin olaraq gizlidir, fərq yarananda avtomatik çıxacaq) -->
-    <div id="change-amount-container" style="display: none; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 6px 10px; border-radius: 6px; font-size: 13px;">
-        <span style="color: #34d399; font-weight: bold;">Qaytarılacaq Məbləğ (Artıq pul):</span>
-        <strong id="change-amount-view" style="color: #34d399; font-size: 15px;">0.00 AZN</strong>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="font-size: 14px; color: #fff; font-weight: bold;">
-            Gətirilən Ödəniş: <input type="number" id="usta-given-amount" placeholder="0.00" style="width: 100px; padding: 6px; background: #0b132b; border: 1px solid #3a506b; border-radius: 6px; color: #5bc0be; font-weight: bold; text-align: right; outline: none;" min="0"> AZN
-        </div>
-        <button id="btn-save-usta-payment" class="btn btn-green" style="padding: 9px 18px; font-size: 13px;">Ödənişi Təsdiq Et</button>
-    </div>
-</div>
-
-    </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr@4.6.13/dist/l10n/az.js"></script>
-    <script type="module" src="app.js?v=7.3"></script>
+    <script type="module" src="app.js?v=8.0"></script>
 </body>
 </html>

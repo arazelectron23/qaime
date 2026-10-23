@@ -112,8 +112,8 @@ body {
 
 /* Üstünə gələndə (hover) içi dolacaq */
 .btn-yellow:hover {
-     filter: brightness(1.15); /* Rəngi bir az parlaqlaşdırır */
-    box-shadow: 0 0 50px rgba(255, 106, 0, 0.4); /* Zərif narıncı parıltı effekti */
+     filter: brightness(1.2); /* Rəngi bir az parlaqlaşdırır */
+     box-shadow: 0 0 10px rgba(255, 147, 75, 0.74); /* Zərif mavi parıltı effekti */
 }
 
 /* Normal halı: İçi dolu və sadə */

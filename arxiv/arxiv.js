@@ -117,7 +117,7 @@ function initSearchInput() {
     totalBox.innerHTML = `
         <span class="label-text">Ümumi:</span>
         <span class="amount-value" id="archive-total-value" style="filter: blur(5px); transition: filter 0.2s ease; cursor: pointer;" title="Göstərmək üçün klikləyin">********</span>
-        <button class="btn-toggle-visibility" id="btn-toggle-amount" title="Göstər / Gizlət">👁️</button>
+        <button class="btn-toggle-visibility" id="btn-toggle-amount" title="Göstər / Gizlət"></button>
     `;
 
     container.appendChild(totalBox);

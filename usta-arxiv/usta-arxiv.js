@@ -554,7 +554,7 @@ async function fetchAndRenderModalUstalar() {
     <div style="text-align: center; padding: 20px;">
         <div class="sharp-ring-loader2" style="width: 35px; height: 35px; margin: 0 auto;"></div>
     </div>
-`;
+    `;
 
     try {
         const querySnapshot = await getDocs(collection(db, "ustalar"));
@@ -565,101 +565,163 @@ async function fetchAndRenderModalUstalar() {
             return;
         }
 
+        let ustalarList = [];
         querySnapshot.forEach((docSnap) => {
-            const ustaData = docSnap.data();
-            const ustaId = docSnap.id;
-
-            const itemDiv = document.createElement('div');
-            itemDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: #1c2541; padding: 8px 12px; border-radius: 6px; border: 1px solid #3a506b; margin-bottom: 6px;';
-            
-            itemDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 8px; flex: 1;" class="usta-name-area">
-                    <span class="usta-name-text" style="color: #fff; font-size: 13px; font-weight: 600;">${ustaData.name}</span>
-                </div>
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <button class="btn-edit-usta" title="Adı dəyiş" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">✏️</button>
-                    <button class="btn-delete-usta-modal" data-id="${ustaId}" style="background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">Sil</button>
-                </div>
-            `;
-
-            // Qələm (Redaktə) düyməsi funksionallığı
-            const editBtn = itemDiv.querySelector('.btn-edit-usta');
-            const nameArea = itemDiv.querySelector('.usta-name-area');
-            const actionButtonsContainer = editBtn.parentElement;
-
-            editBtn.addEventListener('click', () => {
-                nameArea.innerHTML = `<input type="text" class="edit-usta-input" value="${ustaData.name}" style="background: #0b132b; border: 1px solid #5bc0be; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 600; outline: none; width: 100%;">`;
-                
-                editBtn.style.display = 'none';
-
-                const saveCancelBox = document.createElement('div');
-                saveCancelBox.style.cssText = 'display: flex; gap: 4px; align-items: center;';
-                saveCancelBox.innerHTML = `
-                    <button class="btn-save-edit" style="background: #10b981; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Yadda saxla</button>
-                    <button class="btn-cancel-edit" style="background: #64748b; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Ləğv et</button>
-                `;
-
-                const inputField = nameArea.querySelector('.edit-usta-input');
-                inputField.focus();
-
-                saveCancelBox.querySelector('.btn-save-edit').addEventListener('click', async () => {
-                    const newName = inputField.value.trim();
-                    if (!newName) {
-                        alert("Usta adı boş ola bilməz!");
-                        return;
-                    }
-                    try {
-                        await updateDoc(doc(db, "ustalar", ustaId), { name: newName });
-                        fetchAndRenderModalUstalar();
-                    } catch (err) {
-                        console.error("Yeniləmə xətası:", err);
-                        alert("Adı yeniləmək mümkün olmadı!");
-                    }
-                });
-
-                saveCancelBox.querySelector('.btn-cancel-edit').addEventListener('click', () => {
-                    fetchAndRenderModalUstalar();
-                });
-
-                actionButtonsContainer.prepend(saveCancelBox);
-            });
-
-            // Silmə funksionallığı
-            itemDiv.querySelector('.btn-delete-usta-modal').addEventListener('click', () => {
-                const deleteBtn = itemDiv.querySelector('.btn-delete-usta-modal');
-                deleteBtn.style.display = 'none';
-
-                const confirmBox = document.createElement('div');
-                confirmBox.style.cssText = 'display: flex; gap: 6px; align-items: center;';
-                confirmBox.innerHTML = `
-                    <span style="font-size: 12px; color: #facc15; font-weight: 600;">Silinsin?</span>
-                    <button class="btn-yes" style="background: #10b981; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Bəli</button>
-                    <button class="btn-no" style="background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Xeyr</button>
-                `;
-
-                confirmBox.querySelector('.btn-yes').addEventListener('click', async () => {
-                    try {
-                        await deleteDoc(doc(db, "ustalar", ustaId));
-                        itemDiv.remove();
-                        if (listContainer.children.length === 0) {
-                            listContainer.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 10px;">Hələ usta əlavə olunmayıb.</div>';
-                        }
-                    } catch (err) {
-                        console.error("Silmə xətası:", err);
-                        alert("Ustanı silmək mümkün olmadı!");
-                    }
-                });
-
-                confirmBox.querySelector('.btn-no').addEventListener('click', () => {
-                    confirmBox.remove();
-                    deleteBtn.style.display = 'inline-block';
-                });
-
-                deleteBtn.parentElement.appendChild(confirmBox);
-            });
-
-            listContainer.appendChild(itemDiv);
+            ustalarList.push({ id: docSnap.id, ...docSnap.data() });
         });
+
+        // Hər render zamanı ekranda göstərmək üçün funksiya
+        const renderList = () => {
+            listContainer.innerHTML = '';
+            
+            ustalarList.forEach((ustaData, index) => {
+                const ustaId = ustaData.id;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'usta-modal-item';
+                itemDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: #1c2541; padding: 8px 12px; border-radius: 6px; border: 1px solid #3a506b; margin-bottom: 6px;';
+                
+                itemDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;" class="usta-name-area">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <button class="btn-move-up" title="Yuxarı qaldır" style="background: transparent; border: none; color: ${index === 0 ? '#334155' : '#5bc0be'}; cursor: ${index === 0 ? 'default' : 'pointer'}; font-size: 12px; padding: 0; line-height: 1;" ${index === 0 ? 'disabled' : ''}>▲</button>
+                            <button class="btn-move-down" title="Aşağı sal" style="background: transparent; border: none; color: ${index === ustalarList.length - 1 ? '#334155' : '#5bc0be'}; cursor: ${index === ustalarList.length - 1 ? 'default' : 'pointer'}; font-size: 12px; padding: 0; line-height: 1;" ${index === ustalarList.length - 1 ? 'disabled' : ''}>▼</button>
+                        </div>
+                        <span class="usta-name-text" style="color: #fff; font-size: 13px; font-weight: 600; margin-left: 4px;">${ustaData.name}</span>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <button class="btn-edit-usta" title="Adı dəyiş" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">✏️</button>
+                        <button class="btn-delete-usta-modal" data-id="${ustaId}" style="background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">Sil</button>
+                    </div>
+                `;
+
+// Yuxarı ox düyməsi
+const moveUpBtn = itemDiv.querySelector('.btn-move-up');
+if (moveUpBtn && index > 0) {
+    moveUpBtn.addEventListener('click', () => {
+        const prevItemDiv = listContainer.children[index - 1];
+        
+        // Animasiya effektini hər iki xanaya veririk
+        itemDiv.style.transform = 'translateY(-100%)';
+        itemDiv.style.transition = 'transform 0.25s ease';
+        if (prevItemDiv) {
+            prevItemDiv.style.transform = 'translateY(100%)';
+            prevItemDiv.style.transition = 'transform 0.25s ease';
+        }
+
+        setTimeout(() => {
+            const temp = ustalarList[index];
+            ustalarList[index] = ustalarList[index - 1];
+            ustalarList[index - 1] = temp;
+            renderList();
+        }, 250);
+    });
+}
+
+// Aşağı ox düyməsi
+const moveDownBtn = itemDiv.querySelector('.btn-move-down');
+if (moveDownBtn && index < ustalarList.length - 1) {
+    moveDownBtn.addEventListener('click', () => {
+        const nextItemDiv = listContainer.children[index + 1];
+        
+        // Animasiya effektini hər iki xanaya veririk
+        itemDiv.style.transform = 'translateY(100%)';
+        itemDiv.style.transition = 'transform 0.25s ease';
+        if (nextItemDiv) {
+            nextItemDiv.style.transform = 'translateY(-100%)';
+            nextItemDiv.style.transition = 'transform 0.25s ease';
+        }
+
+        setTimeout(() => {
+            const temp = ustalarList[index];
+            ustalarList[index] = ustalarList[index + 1];
+            ustalarList[index + 1] = temp;
+            renderList();
+        }, 250);
+    });
+}
+
+                // Redaktə (Qələm) düyməsi
+                const editBtn = itemDiv.querySelector('.btn-edit-usta');
+                const nameArea = itemDiv.querySelector('.usta-name-area');
+                const actionButtonsContainer = editBtn.parentElement;
+
+                editBtn.addEventListener('click', () => {
+                    nameArea.innerHTML = `<input type="text" class="edit-usta-input" value="${ustaData.name}" style="background: #0b132b; border: 1px solid #5bc0be; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 600; outline: none; width: 100%;">`;
+                    editBtn.style.display = 'none';
+
+                    const saveCancelBox = document.createElement('div');
+                    saveCancelBox.style.cssText = 'display: flex; gap: 4px; align-items: center;';
+                    saveCancelBox.innerHTML = `
+                        <button class="btn-save-edit" style="background: #10b981; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Yadda saxla</button>
+                        <button class="btn-cancel-edit" style="background: #64748b; color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Ləğv et</button>
+                    `;
+
+                    const inputField = nameArea.querySelector('.edit-usta-input');
+                    inputField.focus();
+
+                    saveCancelBox.querySelector('.btn-save-edit').addEventListener('click', async () => {
+                        const newName = inputField.value.trim();
+                        if (!newName) {
+                            alert("Usta adı boş ola bilməz!");
+                            return;
+                        }
+                        try {
+                            await updateDoc(doc(db, "ustalar", ustaId), { name: newName });
+                            fetchAndRenderModalUstalar();
+                        } catch (err) {
+                            console.error("Yeniləmə xətası:", err);
+                            alert("Adı yeniləmək mümkün olmadı!");
+                        }
+                    });
+
+                    saveCancelBox.querySelector('.btn-cancel-edit').addEventListener('click', () => {
+                        renderList();
+                    });
+
+                    actionButtonsContainer.prepend(saveCancelBox);
+                });
+
+                // Silmə düyməsi
+                itemDiv.querySelector('.btn-delete-usta-modal').addEventListener('click', () => {
+                    const deleteBtn = itemDiv.querySelector('.btn-delete-usta-modal');
+                    deleteBtn.style.display = 'none';
+
+                    const confirmBox = document.createElement('div');
+                    confirmBox.style.cssText = 'display: flex; gap: 6px; align-items: center;';
+                    confirmBox.innerHTML = `
+                        <span style="font-size: 12px; color: #facc15; font-weight: 600;">Silinsin?</span>
+                        <button class="btn-yes" style="background: #10b981; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Bəli</button>
+                        <button class="btn-no" style="background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Xeyr</button>
+                    `;
+
+                    confirmBox.querySelector('.btn-yes').addEventListener('click', async () => {
+                        try {
+                            await deleteDoc(doc(db, "ustalar", ustaId));
+                            itemDiv.remove();
+                            if (listContainer.children.length === 0) {
+                                listContainer.innerHTML = '<div style="color: #94a3b8; text-align: center; font-size: 12px; padding: 10px;">Hələ usta əlavə olunmayıb.</div>';
+                            }
+                        } catch (err) {
+                            console.error("Silmə xətası:", err);
+                            alert("Ustanı silmək mümkün olmadı!");
+                        }
+                    });
+
+                    confirmBox.querySelector('.btn-no').addEventListener('click', () => {
+                        confirmBox.remove();
+                        deleteBtn.style.display = 'inline-block';
+                    });
+
+                    deleteBtn.parentElement.appendChild(confirmBox);
+                });
+
+                listContainer.appendChild(itemDiv);
+            });
+        };
+
+        renderList();
+
     } catch (e) {
         console.error("Ustaları oxuyarkən xəta:", e);
         listContainer.innerHTML = '<div style="color: #ef4444; text-align: center; font-size: 12px;">Məlumatları yükləmək olmadı.</div>';
